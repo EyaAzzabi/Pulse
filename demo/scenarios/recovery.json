@@ -1,0 +1,7 @@
+{
+  "name": "C — Earlier collections and supplier extension",
+  "collection_acceleration_days": 25,
+  "payable_delay_days": 21,
+  "expense_reduction_pct": 10,
+  "horizon_days": 90
+}

@@ -1,0 +1,56 @@
+{
+  "name": "PULSE ? Financial digest receipt",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pulse-financial-digest",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "receive",
+      "name": "Authenticated receipt",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\":\"QUEUED\",\"delivery_confirmed\":false,\"message\":\"Accepted by bridge; no delivery provider configured\"}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "ack",
+      "name": "Queue acknowledgment",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        520,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Authenticated receipt": {
+      "main": [
+        [
+          {
+            "node": "Queue acknowledgment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

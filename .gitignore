@@ -1,0 +1,13 @@
+node_modules/
+dist/
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+*.db
+*.db-shm
+*.db-wal
+backend/storage/
+playwright-report/
+test-results/
+*.tsbuildinfo

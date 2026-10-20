@@ -1,0 +1,5 @@
+{
+  "name": "A — Customer payments arrive 15 days late",
+  "payment_delay_days": 15,
+  "horizon_days": 90
+}
