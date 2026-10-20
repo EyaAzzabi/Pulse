@@ -54,3 +54,23 @@ def test_two_identical_scenarios_produce_identical_results():
     b = run_simulation(Decimal("500"), [], [payable], [], AS_OF, 30, ScenarioAssumptions(expense_change_pct=Decimal("-10")))
     assert a.lowest_cash_point == b.lowest_cash_point
     assert a.days_below_zero == b.days_below_zero
+
+
+def test_simulation_starts_from_todays_cash():
+    history = [SimpleNamespace(date=AS_OF - timedelta(days=10), amount=Decimal("5000.00"), direction="IN", category="sales")]
+    out = run_simulation(Decimal("1000"), history, [], [], AS_OF, 5, ScenarioAssumptions())
+    assert out.simulated_points[0].projected_cash == Decimal("6000.00")
+    assert out.baseline_points[0].projected_cash == Decimal("6000.00")
+
+
+def test_customer_delay_can_target_one_customer():
+    atlas = SimpleNamespace(direction="RECEIVABLE", amount=Decimal("1000"), amount_paid=Decimal("0"),
+                            due_date=AS_OF + timedelta(days=5), status="unpaid", counterparty_name="Atlas Retail Group")
+    other = SimpleNamespace(direction="RECEIVABLE", amount=Decimal("500"), amount_paid=Decimal("0"),
+                            due_date=AS_OF + timedelta(days=5), status="unpaid", counterparty_name="Bramble & Co")
+    out = run_simulation(Decimal("0"), [], [atlas, other], [], AS_OF, 30,
+                         ScenarioAssumptions(customer_payment_delay_days=10, delayed_customer="atlas"))
+    day5 = next(p for p in out.simulated_points if p.date == AS_OF + timedelta(days=5))
+    day15 = next(p for p in out.simulated_points if p.date == AS_OF + timedelta(days=15))
+    assert day5.known_component == Decimal("500.00")
+    assert day15.known_component == Decimal("1000.00")

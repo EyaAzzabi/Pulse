@@ -140,13 +140,21 @@ export interface ChatResponse {
   evidence: string[]
   suggested_follow_ups: string[]
   chart_points: { date: string; projected_cash: string; confidence: string }[]
+  agent_trace: AgentStep[]
+  actions: { id: string; action_type: string; status: string; count: number }[]
+}
+
+export interface AgentStep {
+  agent: string
+  tool: string
+  summary: string
 }
 
 export interface ConversationOut {
   id: string
   title: string
   created_at: string
-  messages: { role: 'user' | 'assistant'; content: string; created_at: string }[]
+  messages: { role: 'user' | 'assistant'; content: string; created_at: string; agent_trace?: AgentStep[] }[]
 }
 
 export interface ActionOut {
@@ -175,4 +183,18 @@ export interface NotificationOut {
   link: string
   read: boolean
   created_at: string
+}
+
+export interface OverviewOut {
+  upcoming: { date: string; label: string; kind: 'receivable' | 'payable' | 'recurring' | 'recurring_in'; amount: string }[]
+  aging: { bucket: '0-30' | '31-60' | '60+'; amount: string; count: number }[]
+  changes: {
+    inflow: string
+    inflow_prev: string
+    inflow_change_pct: string | null
+    outflow: string
+    outflow_prev: string
+    outflow_change_pct: string | null
+  }
+  has_data: boolean
 }

@@ -12,6 +12,7 @@ from app.models.organization import Organization
 from app.models.simulation import ActionProposal
 from app.models.user import User
 from app.schemas.actions import ActionOut, ActionProposeRequest
+from app.services.notifications import notify
 from app.services.workflows import build_invoice_reminder_draft, dispatch_action
 
 router = APIRouter(prefix="/actions", tags=["actions"])
@@ -88,6 +89,15 @@ def propose_action(
         execution_result_json="{}",
     )
     db.add(action)
+    notify(
+        db,
+        organization_id,
+        category="approval_request",
+        severity="warning",
+        title=f"{len(drafts)} invoice reminder(s) waiting for approval",
+        body=expected_result,
+        link="/decisions",
+    )
     db.commit()
     return _to_out(action)
 
@@ -149,7 +159,7 @@ def execute_action(
             severity="info" if result["status"] == "SENT" else "warning",
             title=f"Action {action.action_type} — {result['status']}",
             body=result["detail"],
-            link=f"/decisions/{action.id}",
+            link="/decisions",
         )
     )
     db.add(

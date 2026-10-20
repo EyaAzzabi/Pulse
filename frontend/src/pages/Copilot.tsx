@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { Bot, Mic, MicOff, Plus, Send, User, Volume2, VolumeX } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { ActionCards, AgentTrace, AnswerChart } from '../components/AgentTrace'
+import { RichText, plainText } from '../components/RichText'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -50,7 +52,7 @@ export function Copilot() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-[calc(100vh-4rem)]">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white p-4 md:flex">
         <Button variant="secondary" size="sm" onClick={chat.startNew} className="mb-4 w-full justify-start">
           <Plus className="h-4 w-4" /> New conversation
@@ -113,16 +115,22 @@ export function Copilot() {
               <div className={`max-w-[80%] ${m.role === 'user' ? 'order-first' : ''}`}>
                 <Card className={m.role === 'user' ? 'bg-brand/5' : undefined}>
                   <div className="px-4 py-3">
-                    <p className="whitespace-pre-line text-sm text-ink">{m.content}</p>
+                    {m.role === 'assistant' ? (
+                      <RichText text={m.content} />
+                    ) : (
+                      <p className="whitespace-pre-line text-sm text-ink">{m.content}</p>
+                    )}
+                    {m.chartPoints && <AnswerChart points={m.chartPoints} />}
+                    {m.actions && <ActionCards actions={m.actions} />}
                     <div className="mt-2 flex items-center gap-2">
                       {m.aiGenerated !== undefined && (
                         <p className="text-[11px] text-slate">
-                          {m.aiGenerated ? 'Phrased by LLM, grounded in computed data' : 'Deterministic answer (no LLM)'}
+                          {m.aiGenerated ? 'AI answer, every figure from PULSE tools' : 'Deterministic answer (no LLM)'}
                         </p>
                       )}
                       {m.role === 'assistant' && voice.synthSupported && (
                         <button
-                          onClick={() => (voice.isSpeaking ? voice.stopSpeaking() : voice.speak(m.content))}
+                          onClick={() => (voice.isSpeaking ? voice.stopSpeaking() : voice.speak(plainText(m.content)))}
                           className="ml-auto flex items-center gap-1 text-[11px] text-slate hover:text-brand"
                           title="Listen"
                         >
@@ -131,6 +139,7 @@ export function Copilot() {
                         </button>
                       )}
                     </div>
+                    {m.trace && <AgentTrace steps={m.trace} />}
                   </div>
                 </Card>
                 {m.followUps && m.followUps.length > 0 && (

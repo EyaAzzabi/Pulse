@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useCopilotChat } from '../hooks/useCopilotChat'
 import { useVoice } from '../hooks/useVoice'
+import { ActionCards, AgentTrace } from './AgentTrace'
 import { Logo } from './Logo'
+import { RichText, plainText } from './RichText'
 
 /** Floating assistant available beside every authenticated page. Keeps its own
  * short-lived conversation (separate from the full /copilot page's history),
@@ -70,10 +72,16 @@ export function ChatWidget() {
                     m.role === 'user' ? 'bg-brand text-white' : 'border border-slate-200 bg-slate-50 text-ink'
                   }`}
                 >
-                  <p className="whitespace-pre-line">{m.content}</p>
+                  {m.role === 'assistant' ? (
+                    <RichText text={m.content} className="text-xs" />
+                  ) : (
+                    <p className="whitespace-pre-line">{m.content}</p>
+                  )}
+                  {m.actions && <ActionCards actions={m.actions} />}
+                  {m.trace && <AgentTrace steps={m.trace} compact />}
                   {m.role === 'assistant' && voice.synthSupported && (
                     <button
-                      onClick={() => (voice.isSpeaking ? voice.stopSpeaking() : voice.speak(m.content))}
+                      onClick={() => (voice.isSpeaking ? voice.stopSpeaking() : voice.speak(plainText(m.content)))}
                       className="mt-1 flex items-center gap-1 text-[10px] text-slate hover:text-brand"
                     >
                       {voice.isSpeaking ? <VolumeX className="h-2.5 w-2.5" /> : <Volume2 className="h-2.5 w-2.5" />}

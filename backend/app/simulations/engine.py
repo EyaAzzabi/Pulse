@@ -11,6 +11,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from types import SimpleNamespace
 
+from app.financial.engine import current_liquidity
 from app.forecasting.engine import ForecastPointData, run_forecast
 from app.models.financial import Invoice, RecurringObligation, Transaction
 
@@ -31,6 +32,11 @@ class ScenarioAssumptions:
     financing_amount: Decimal = Decimal("0")
     financing_monthly_cost: Decimal = Decimal("0")
     one_time_cash_injection: Decimal = Decimal("0")
+    # When set, the customer delay applies only to this customer's invoices.
+    delayed_customer: str | None = None
+    # Overdue receivables are assumed collected this many days from today
+    # (e.g. after reminders). Without it they stay out of the forecast.
+    collect_overdue_within_days: int | None = None
 
 
 @dataclass
@@ -62,7 +68,16 @@ def _copy_invoice(inv: Invoice, extra_delay_days: int, as_of: date) -> SimpleNam
         amount_paid=inv.amount_paid,
         due_date=due,
         status=inv.status,
+        counterparty_name=getattr(inv, "counterparty_name", ""),
     )
+
+
+def _matches_customer(inv, customer: str | None) -> bool:
+    if not customer:
+        return True
+    name = (getattr(inv, "counterparty_name", "") or "").lower()
+    target = customer.strip().lower()
+    return bool(target) and (target in name or name in target)
 
 
 def _apply_assumptions(
@@ -75,13 +90,18 @@ def _apply_assumptions(
     adjusted_invoices = [
         _copy_invoice(
             inv,
-            assumptions.customer_payment_delay_days if inv.direction == "RECEIVABLE" else 0,
+            assumptions.customer_payment_delay_days if _matches_customer(inv, assumptions.delayed_customer) else 0,
             as_of,
         )
         if inv.direction == "RECEIVABLE"
         else _copy_invoice(inv, assumptions.supplier_payment_delay_days, as_of)
         for inv in invoices
     ]
+    if assumptions.collect_overdue_within_days:
+        collect_on = as_of + timedelta(days=max(1, assumptions.collect_overdue_within_days))
+        for copy in adjusted_invoices:
+            if copy.direction == "RECEIVABLE" and copy.status != "paid" and copy.due_date < as_of:
+                copy.due_date = collect_on
 
     # One-time events are modeled as synthetic "invoices" due the day after as_of
     # so they flow through the same known-component logic as everything else.
@@ -155,7 +175,7 @@ def run_simulation(
     # specific invoice or obligation.
     rev_mult = Decimal("1") + (assumptions.revenue_change_pct / Decimal("100"))
     exp_mult = Decimal("1") + (assumptions.expense_change_pct / Decimal("100"))
-    running = Decimal(starting_cash)
+    running = current_liquidity(starting_cash, transactions, as_of)
     adjusted_points: list[ForecastPointData] = []
     for p in simulated_points:
         uncertain = p.uncertain_component

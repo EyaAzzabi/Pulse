@@ -20,6 +20,7 @@ import {
   Mail,
   PenLine,
   Scissors,
+  Sheet,
   ShieldCheck,
   ShoppingCart,
   Sparkles,
@@ -49,7 +50,7 @@ import type { FinancialSummary, ForecastRunOut } from '../types'
 import { Landing } from './Landing'
 
 type Persona = 'owner' | 'finance_manager' | 'accountant' | 'viewer'
-type DataSource = 'csv' | 'sample' | 'estimates'
+type DataSource = 'file' | 'gsheet' | 'sample' | 'estimates'
 type Icon = typeof Wallet
 
 const STEPS = [
@@ -188,6 +189,8 @@ const INIT_TASKS = [
   { key: 'risk', label: 'Detecting risks' },
 ] as const
 
+type FieldErrors = Record<string, string>
+
 interface AccountState {
   fullName: string
   organizationName: string
@@ -228,7 +231,9 @@ export function Onboarding() {
       return
     }
     if (saved.data && Object.keys(saved.data).length > 0) {
-      setForm((prev) => ({ ...prev, ...saved.data }))
+      const restored = { ...saved.data }
+      if (restored.data_source === 'csv') restored.data_source = 'file'
+      setForm((prev) => ({ ...prev, ...restored }))
       setStep(Math.min(Math.max(saved.current_step - 1, FIRST_ACCOUNT_STEP), INIT_STEP))
     }
   }, [existingQuery.data, navigate])
@@ -252,12 +257,56 @@ export function Onboarding() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
 
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+
+  function clearFieldError(key: string) {
+    setFieldErrors((prev) => {
+      if (!(key in prev)) return prev
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+  }
+
   const update: Update = (key, value) => {
     setStepError(null)
+    clearFieldError(key)
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
+  function updateAccount(next: AccountState) {
+    for (const key of Object.keys(next) as (keyof AccountState)[]) {
+      if (next[key] !== account[key]) clearFieldError(key)
+    }
+    setStepError(null)
+    setAccount(next)
+  }
+
+  function validate(current: number): FieldErrors {
+    const e: FieldErrors = {}
+    if (current === STEP.account) {
+      if (!account.fullName.trim()) e.fullName = 'Enter your full name.'
+      if (!account.organizationName.trim()) e.organizationName = 'Enter your business name.'
+      if (!account.email.trim()) e.email = 'Enter your email address.'
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.email)) e.email = 'This email address looks incomplete.'
+      if (!account.password) e.password = 'Choose a password.'
+      else if (account.password.length < 8) e.password = 'Use at least 8 characters.'
+    }
+    if (current === STEP.business && !form.country.trim()) e.country = 'Enter the country your business operates in.'
+    if (current === STEP.data && (form.data_source === 'file' || form.data_source === 'gsheet') && !(csvResult && csvResult.imported + csvResult.skipped_duplicates > 0)) {
+      e.csv = 'Import at least one valid row first, or pick another option.'
+    }
+    if (current === STEP.financial) {
+      if (!form.sample_loaded && form.current_cash_balance === '') e.current_cash_balance = 'Required to anchor your forecast.'
+      if (form.monthly_revenue_estimate === '') e.monthly_revenue_estimate = 'Enter an estimate, even a rough one.'
+      if (form.monthly_fixed_expenses_estimate === '') e.monthly_fixed_expenses_estimate = 'Enter an estimate, even a rough one.'
+    }
+    if (current === STEP.goals && form.goals.length === 0) e.goals = 'Pick at least one goal.'
+    return e
+  }
+
   function toggleGoal(key: string) {
+    clearFieldError('goals')
     setForm((prev) => ({
       ...prev,
       goals: prev.goals.includes(key) ? prev.goals.filter((g) => g !== key) : [...prev.goals, key],
@@ -266,22 +315,6 @@ export function Onboarding() {
 
   function saveProgress(nextStep: number, data: FormState) {
     api.put(`/onboarding?organization_id=${orgId}`, { current_step: nextStep + 1, data }).catch(() => {})
-  }
-
-  async function uploadCsv(file: File) {
-    setBusy(true)
-    setStepError(null)
-    try {
-      const body = new FormData()
-      body.append('file', file)
-      const res = await api.post<CsvResult>(`/transactions/import?organization_id=${orgId}`, body)
-      setCsvResult(res.data)
-    } catch (err: unknown) {
-      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      setStepError(detail || 'Upload failed. Check the file and try again.')
-    } finally {
-      setBusy(false)
-    }
   }
 
   function errorDetail(err: unknown): { status?: number; detail?: string } {
@@ -315,20 +348,15 @@ export function Onboarding() {
     setStepError(null)
     let nextForm = form
 
+    const errors = validate(step)
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) {
+      const count = Object.keys(errors).length
+      setStepError(count === 1 ? 'One required field is missing.' : `${count} required fields are missing.`)
+      return
+    }
+
     if (step === STEP.account) {
-      const { fullName, organizationName, email, password } = account
-      if (!fullName.trim() || !organizationName.trim()) {
-        setStepError('Enter your name and your business name.')
-        return
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setStepError('Enter a valid email address.')
-        return
-      }
-      if (password.length < 8) {
-        setStepError('Use a password of at least 8 characters.')
-        return
-      }
       if (await sendCode()) setStep(STEP.verify)
       return
     }
@@ -351,10 +379,6 @@ export function Onboarding() {
     }
 
     if (step === STEP.data) {
-      if (form.data_source === 'csv' && !(csvResult && csvResult.imported + csvResult.skipped_duplicates > 0)) {
-        setStepError('Upload a CSV with at least one valid row, or pick another option.')
-        return
-      }
       if (form.data_source === 'sample' && !form.sample_loaded) {
         setBusy(true)
         try {
@@ -384,11 +408,6 @@ export function Onboarding() {
       }
     }
 
-    if (step === STEP.financial && !form.sample_loaded && form.current_cash_balance === '') {
-      setStepError('Your current cash balance is required to anchor the forecast.')
-      return
-    }
-
     const next = step + 1
     saveProgress(next, nextForm)
     setStep(next)
@@ -396,6 +415,7 @@ export function Onboarding() {
 
   function goBack() {
     setStepError(null)
+    setFieldErrors({})
     if (step === INIT_STEP) {
       initStarted.current = false
       setTaskStatus({})
@@ -539,7 +559,7 @@ export function Onboarding() {
               <p className="mb-6 text-xs font-medium uppercase tracking-wider text-slate md:hidden">
                 Step {step + 1} of {STEPS.length} · {STEPS[step].label}
               </p>
-              {step === STEP.account && <AccountStep account={account} setAccount={setAccount} onSubmit={goNext} />}
+              {step === STEP.account && <AccountStep account={account} setAccount={updateAccount} onSubmit={goNext} errors={fieldErrors} />}
               {step === STEP.verify && (
                 <VerifyStep
                   email={account.email}
@@ -559,12 +579,22 @@ export function Onboarding() {
               {step === STEP.role && (
                 <RoleStep persona={form.persona} update={update} orgName={currentOrg?.organization_name} />
               )}
-              {step === STEP.business && <BusinessStep form={form} update={update} />}
+              {step === STEP.business && <BusinessStep form={form} update={update} errors={fieldErrors} />}
               {step === STEP.data && (
-                <DataStep form={form} update={update} csvResult={csvResult} uploadCsv={uploadCsv} busy={busy} />
+                <DataStep
+                  form={form}
+                  update={update}
+                  orgId={orgId}
+                  result={csvResult}
+                  onImported={(r) => {
+                    setCsvResult(r)
+                    clearFieldError('csv')
+                  }}
+                  error={fieldErrors.csv}
+                />
               )}
-              {step === STEP.financial && <FinancialStep form={form} update={update} />}
-              {step === STEP.goals && <GoalsStep goals={form.goals} toggleGoal={toggleGoal} />}
+              {step === STEP.financial && <FinancialStep form={form} update={update} errors={fieldErrors} />}
+              {step === STEP.goals && <GoalsStep goals={form.goals} toggleGoal={toggleGoal} error={fieldErrors.goals} />}
               {step === STEP.ai && <AiStep form={form} update={update} />}
               {step === INIT_STEP && (
                 <InitStep
@@ -652,15 +682,30 @@ function AccountStep({
   account,
   setAccount,
   onSubmit,
+  errors,
 }: {
   account: AccountState
   setAccount: (a: AccountState) => void
   onSubmit: () => void
+  errors: FieldErrors
 }) {
   const set = (key: keyof AccountState) => (e: ChangeEvent<HTMLInputElement>) =>
     setAccount({ ...account, [key]: e.target.value })
+  const fields: {
+    key: keyof AccountState
+    label: string
+    type?: string
+    autoComplete: string
+    placeholder?: string
+  }[] = [
+    { key: 'fullName', label: 'Full name', autoComplete: 'name', placeholder: 'Your full name' },
+    { key: 'organizationName', label: 'Business name', autoComplete: 'organization', placeholder: 'Your company' },
+    { key: 'email', label: 'Work email', type: 'email', autoComplete: 'email', placeholder: 'you@company.com' },
+    { key: 'password', label: 'Password', type: 'password', autoComplete: 'new-password', placeholder: 'At least 8 characters' },
+  ]
   return (
     <form
+      noValidate
       onSubmit={(e) => {
         e.preventDefault()
         onSubmit()
@@ -673,35 +718,24 @@ function AccountStep({
         title="Let's understand the business behind the numbers."
         subtitle="Create your account first. The next steps take about two minutes and build your first forecast and risk read."
       />
+      <RequiredLegend />
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <label className="block">
-          <Label>Full name</Label>
-          <input value={account.fullName} onChange={set('fullName')} autoComplete="name" className={inputClass} />
-        </label>
-        <label className="block">
-          <Label>Business name</Label>
-          <input
-            value={account.organizationName}
-            onChange={set('organizationName')}
-            autoComplete="organization"
-            className={inputClass}
-          />
-        </label>
-        <label className="block">
-          <Label>Work email</Label>
-          <input type="email" value={account.email} onChange={set('email')} autoComplete="email" className={inputClass} />
-        </label>
-        <label className="block">
-          <Label>Password</Label>
-          <input
-            type="password"
-            value={account.password}
-            onChange={set('password')}
-            autoComplete="new-password"
-            placeholder="At least 8 characters"
-            className={inputClass}
-          />
-        </label>
+        {fields.map((f) => (
+          <label key={f.key} className="block">
+            <Label required>{f.label}</Label>
+            <input
+              type={f.type ?? 'text'}
+              value={account[f.key]}
+              onChange={set(f.key)}
+              autoComplete={f.autoComplete}
+              placeholder={f.placeholder}
+              aria-invalid={!!errors[f.key]}
+              aria-required
+              className={fieldClass(errors[f.key])}
+            />
+            <FieldError message={errors[f.key]} />
+          </label>
+        ))}
       </div>
       <p className="mt-4 text-xs text-slate">We'll email you a 6-digit code to confirm the address belongs to you.</p>
       <button type="submit" className="hidden" />
@@ -866,12 +900,13 @@ function RoleStep({ persona, update, orgName }: { persona: Persona; update: Upda
   )
 }
 
-function BusinessStep({ form, update }: { form: FormState; update: Update }) {
+function BusinessStep({ form, update, errors }: { form: FormState; update: Update; errors: FieldErrors }) {
   return (
     <div>
       <StepHeading title="Business profile" subtitle="Sets the currency, formatting and context PULSE uses everywhere." />
+      <RequiredLegend />
 
-      <Label>Industry</Label>
+      <Label required>Industry</Label>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {INDUSTRIES.map((ind) => (
           <SelectCard key={ind.key} selected={form.industry === ind.key} onClick={() => update('industry', ind.key)}>
@@ -882,17 +917,20 @@ function BusinessStep({ form, update }: { form: FormState; update: Update }) {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <div>
-          <Label>Country</Label>
+        <label className="block">
+          <Label required>Country</Label>
           <input
             value={form.country}
             onChange={(e) => update('country', e.target.value)}
             placeholder="e.g. France"
-            className={inputClass}
+            aria-invalid={!!errors.country}
+            aria-required
+            className={fieldClass(errors.country)}
           />
-        </div>
+          <FieldError message={errors.country} />
+        </label>
         <div>
-          <Label>Currency</Label>
+          <Label required>Currency</Label>
           <div className="flex flex-wrap gap-2">
             {CURRENCIES.map((c) => (
               <Chip key={c} active={form.currency === c} onClick={() => update('currency', c)}>
@@ -904,7 +942,7 @@ function BusinessStep({ form, update }: { form: FormState; update: Update }) {
       </div>
 
       <div className="mt-6">
-        <Label>Company size</Label>
+        <Label required>Company size</Label>
         <div className="flex flex-wrap gap-2">
           {SIZES.map((s) => (
             <Chip key={s} active={form.company_size === s} onClick={() => update('company_size', s)}>
@@ -917,40 +955,139 @@ function BusinessStep({ form, update }: { form: FormState; update: Update }) {
   )
 }
 
+interface TablePreview {
+  headers: string[]
+  sample_rows: string[][]
+  total_rows: number
+  suggested_mapping: Record<ImportField, string | null>
+}
+
+type ImportField = 'date' | 'amount' | 'direction' | 'category' | 'description'
+
+const IMPORT_FIELDS: { key: ImportField; label: string; required?: boolean; hint?: string }[] = [
+  { key: 'date', label: 'Date', required: true },
+  { key: 'amount', label: 'Amount', required: true },
+  { key: 'direction', label: 'In / out', hint: 'Leave empty if expenses are negative amounts.' },
+  { key: 'category', label: 'Category' },
+  { key: 'description', label: 'Description' },
+]
+
 function DataStep({
   form,
   update,
-  csvResult,
-  uploadCsv,
-  busy,
+  orgId,
+  result,
+  onImported,
+  error,
 }: {
   form: FormState
   update: Update
-  csvResult: CsvResult | null
-  uploadCsv: (file: File) => void
-  busy: boolean
+  orgId?: string
+  result: CsvResult | null
+  onImported: (r: CsvResult) => void
+  error?: string
 }) {
+  const [file, setFile] = useState<File | null>(null)
+  const [sheetUrl, setSheetUrl] = useState('')
+  const [tablePreview, setTablePreview] = useState<TablePreview | null>(null)
+  const [mapping, setMapping] = useState<Record<ImportField, string | null> | null>(null)
+  const [working, setWorking] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
+
   const options: { key: DataSource; icon: Icon; title: string; desc: string }[] = [
-    { key: 'csv', icon: FileSpreadsheet, title: 'Upload a CSV', desc: 'Import your transaction history from a bank or accounting export.' },
+    { key: 'file', icon: FileSpreadsheet, title: 'Upload a file', desc: 'Excel (.xlsx) or CSV export from your bank or accounting tool.' },
+    { key: 'gsheet', icon: Sheet, title: 'Connect a Google Sheet', desc: 'Paste a sheet link and PULSE reads it directly.' },
     { key: 'sample', icon: Database, title: 'Use Northstar Studio data', desc: 'Six months of transactions and invoices to explore every feature right away.' },
     { key: 'estimates', icon: PenLine, title: 'Start from my estimates', desc: 'Use the numbers you give in the next step and import history later.' },
   ]
-  const disabled = form.sample_loaded
+  const locked = form.sample_loaded
+
+  function detail(err: unknown, fallback: string) {
+    const d = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail
+    return typeof d === 'string' ? d : fallback
+  }
+
+  function resetSource(source: DataSource) {
+    update('data_source', source)
+    setTablePreview(null)
+    setMapping(null)
+    setFile(null)
+    setLocalError(null)
+  }
+
+  async function previewFile(f: File) {
+    setWorking(true)
+    setLocalError(null)
+    try {
+      const body = new FormData()
+      body.append('file', f)
+      const res = await api.post<TablePreview>(`/imports/file/preview?organization_id=${orgId}`, body)
+      setFile(f)
+      setTablePreview(res.data)
+      setMapping(res.data.suggested_mapping)
+    } catch (err) {
+      setLocalError(detail(err, 'This file could not be read.'))
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  async function previewSheet() {
+    setWorking(true)
+    setLocalError(null)
+    try {
+      const res = await api.post<TablePreview>(`/imports/google-sheet/preview?organization_id=${orgId}`, { url: sheetUrl })
+      setTablePreview(res.data)
+      setMapping(res.data.suggested_mapping)
+    } catch (err) {
+      setLocalError(detail(err, 'This sheet could not be read.'))
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  async function runImport() {
+    if (!mapping) return
+    if (!mapping.date || !mapping.amount) {
+      setLocalError('Choose which column holds the date and which holds the amount.')
+      return
+    }
+    setWorking(true)
+    setLocalError(null)
+    try {
+      let res
+      if (form.data_source === 'file' && file) {
+        const body = new FormData()
+        body.append('file', file)
+        body.append('mapping', JSON.stringify(mapping))
+        res = await api.post<CsvResult>(`/imports/file?organization_id=${orgId}`, body)
+      } else {
+        res = await api.post<CsvResult>(`/imports/google-sheet?organization_id=${orgId}`, { url: sheetUrl, mapping })
+      }
+      onImported(res.data)
+    } catch (err) {
+      setLocalError(detail(err, 'The import failed. Please try again.'))
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  const importing = form.data_source === 'file' || form.data_source === 'gsheet'
 
   return (
     <div>
       <StepHeading title="Connect your data" subtitle="The more history PULSE has, the sharper the forecast. You can add more anytime." />
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {options.map((o) => {
           const selected = form.data_source === o.key
           return (
             <button
               key={o.key}
               type="button"
-              disabled={disabled && o.key !== 'sample'}
-              onClick={() => update('data_source', o.key)}
+              disabled={locked && o.key !== 'sample'}
+              onClick={() => resetSource(o.key)}
               className={cn(
-                'flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+                'flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50',
                 selected ? 'border-brand bg-brand/5' : 'border-slate-200 hover:border-slate-300',
               )}
             >
@@ -958,48 +1095,169 @@ function DataStep({
                 <o.icon className="h-5 w-5" />
               </span>
               <span>
-                <span className="block font-display text-base font-semibold text-ink">{o.title}</span>
-                <span className="block text-sm text-slate">{o.desc}</span>
+                <span className="block font-display text-sm font-semibold text-ink">{o.title}</span>
+                <span className="block text-xs text-slate">{o.desc}</span>
               </span>
             </button>
           )
         })}
       </div>
 
-      {form.data_source === 'csv' && (
-        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5">
-          <p className="text-sm text-ink">
-            Required columns: <code className="text-brand">date, amount, direction, category</code>, optional{' '}
-            <code className="text-brand">description</code>. Direction is IN or OUT.
-          </p>
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSpreadsheet className="h-4 w-4 text-brand" />}
-            Choose a CSV file
-            <input
-              type="file"
-              accept=".csv,text/csv"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) uploadCsv(file)
-              }}
-            />
-          </label>
-          {csvResult && (
-            <div className="mt-4 text-sm">
-              <p className="flex items-center gap-2 text-success">
-                <Check className="h-4 w-4" /> {csvResult.imported} transactions imported
-                {csvResult.skipped_duplicates > 0 && `, ${csvResult.skipped_duplicates} duplicates skipped`}
+      {importing && !tablePreview && (
+        <div
+          className={cn(
+            'mt-5 rounded-2xl border border-dashed p-5',
+            error ? 'border-risk bg-risk/5' : 'border-slate-300 bg-slate-50',
+          )}
+        >
+          {form.data_source === 'file' ? (
+            <>
+              <p className="text-sm text-ink">Any layout works. You match your columns on the next screen.</p>
+              <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
+                {working ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSpreadsheet className="h-4 w-4 text-brand" />}
+                Choose an Excel or CSV file
+                <input
+                  type="file"
+                  accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0]
+                    if (f) previewFile(f)
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <Label required>Google Sheets link</Label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  value={sheetUrl}
+                  onChange={(e) => setSheetUrl(e.target.value)}
+                  placeholder="https://docs.google.com/spreadsheets/d/..."
+                  className={fieldClass()}
+                />
+                <Button type="button" onClick={previewSheet} disabled={working || !sheetUrl.trim()}>
+                  {working ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  Load sheet
+                </Button>
+              </div>
+              <p className="mt-2 text-xs text-slate">
+                In Google Sheets, click <span className="font-medium text-ink">Share</span> and set access to{' '}
+                <span className="font-medium text-ink">Anyone with the link can view</span>. PULSE reads the first tab
+                unless the link points to another one.
               </p>
-              {csvResult.errors.length > 0 && (
-                <ul className="mt-2 space-y-1 text-xs text-risk">
-                  {csvResult.errors.slice(0, 5).map((e) => (
-                    <li key={`${e.row}-${e.reason}`}>Row {e.row}: {e.reason}</li>
+            </>
+          )}
+          <FieldError message={error} />
+        </div>
+      )}
+
+      {importing && tablePreview && mapping && (
+        <div className="mt-5 rounded-2xl border border-slate-200 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-ink">
+              Match your columns
+              <span className="ml-2 font-normal text-slate">{tablePreview.total_rows} rows found</span>
+            </p>
+            {!result && (
+              <button
+                type="button"
+                onClick={() => {
+                  setTablePreview(null)
+                  setMapping(null)
+                }}
+                className="text-xs font-medium text-brand hover:underline"
+              >
+                {form.data_source === 'file' ? 'Choose another file' : 'Use another link'}
+              </button>
+            )}
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {IMPORT_FIELDS.map((f) => (
+              <label key={f.key} className="block">
+                <Label required={f.required}>{f.label}</Label>
+                <select
+                  value={mapping[f.key] ?? ''}
+                  onChange={(e) => setMapping({ ...mapping, [f.key]: e.target.value || null })}
+                  disabled={!!result}
+                  className={fieldClass(f.required && !mapping[f.key] ? 'missing' : undefined)}
+                >
+                  <option value="">{f.required ? 'Choose a column' : 'Not in my file'}</option>
+                  {tablePreview.headers.map((h) => (
+                    <option key={h} value={h}>
+                      {h}
+                    </option>
                   ))}
-                  {csvResult.errors.length > 5 && <li>And {csvResult.errors.length - 5} more rows with errors.</li>}
-                </ul>
-              )}
+                </select>
+                {f.hint && <span className="mt-1 block text-xs text-slate">{f.hint}</span>}
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-5 overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate">
+                <tr>
+                  {tablePreview.headers.map((h) => {
+                    const field = IMPORT_FIELDS.find((f) => mapping[f.key] === h)
+                    return (
+                      <th key={h} className="whitespace-nowrap px-3 py-2 font-medium">
+                        {h}
+                        {field && <span className="ml-1.5 rounded bg-brand/10 px-1.5 py-0.5 text-[10px] text-brand">{field.label}</span>}
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {tablePreview.sample_rows.map((row, i) => (
+                  <tr key={i} className="border-t border-slate-100">
+                    {row.map((c, j) => (
+                      <td key={j} className="whitespace-nowrap px-3 py-2 text-ink">
+                        {c}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {!result && (
+            <div className="mt-5 flex justify-end">
+              <Button type="button" onClick={runImport} disabled={working}>
+                {working ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                Import {tablePreview.total_rows} rows
+              </Button>
             </div>
+          )}
+        </div>
+      )}
+
+      {localError && (
+        <p className="mt-4 flex items-center gap-2 text-sm text-risk">
+          <AlertTriangle className="h-4 w-4 shrink-0" /> {localError}
+        </p>
+      )}
+
+      {importing && result && (
+        <div className="mt-4 text-sm">
+          <p className="flex items-center gap-2 text-success">
+            <Check className="h-4 w-4" /> {result.imported} transactions imported
+            {result.skipped_duplicates > 0 && `, ${result.skipped_duplicates} duplicates skipped`}
+          </p>
+          {result.errors.length > 0 && (
+            <ul className="mt-2 space-y-1 text-xs text-risk">
+              {result.errors.slice(0, 5).map((e) => (
+                <li key={`${e.row}-${e.reason}`}>
+                  Row {e.row}: {e.reason}
+                </li>
+              ))}
+              {result.errors.length > 5 && <li>And {result.errors.length - 5} more rows with errors.</li>}
+            </ul>
           )}
         </div>
       )}
@@ -1013,7 +1271,7 @@ function DataStep({
   )
 }
 
-function FinancialStep({ form, update }: { form: FormState; update: Update }) {
+function FinancialStep({ form, update, errors }: { form: FormState; update: Update; errors: FieldErrors }) {
   const symbol = CURRENCY_SYMBOL[form.currency] ?? form.currency
   return (
     <div>
@@ -1022,9 +1280,10 @@ function FinancialStep({ form, update }: { form: FormState; update: Update }) {
         subtitle={
           form.sample_loaded
             ? 'Prefilled from the Northstar Studio data. Adjust anything that does not fit.'
-            : 'Rough numbers are fine. Only the cash balance is required.'
+            : 'Rough numbers are fine. You can refine them later in Settings.'
         }
       />
+      <RequiredLegend />
       <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
         {form.sample_loaded ? (
           <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate sm:col-span-2">
@@ -1038,6 +1297,7 @@ function FinancialStep({ form, update }: { form: FormState; update: Update }) {
             value={form.current_cash_balance}
             onChange={(v) => update('current_cash_balance', v)}
             required
+            error={errors.current_cash_balance}
           />
         )}
         <MoneyField
@@ -1046,6 +1306,8 @@ function FinancialStep({ form, update }: { form: FormState; update: Update }) {
           symbol={symbol}
           value={form.monthly_revenue_estimate}
           onChange={(v) => update('monthly_revenue_estimate', v)}
+          required
+          error={errors.monthly_revenue_estimate}
         />
         <MoneyField
           label="Monthly fixed expenses"
@@ -1053,6 +1315,8 @@ function FinancialStep({ form, update }: { form: FormState; update: Update }) {
           symbol={symbol}
           value={form.monthly_fixed_expenses_estimate}
           onChange={(v) => update('monthly_fixed_expenses_estimate', v)}
+          required
+          error={errors.monthly_fixed_expenses_estimate}
         />
         <NumberField
           label="Employees"
@@ -1079,10 +1343,21 @@ function FinancialStep({ form, update }: { form: FormState; update: Update }) {
   )
 }
 
-function GoalsStep({ goals, toggleGoal }: { goals: string[]; toggleGoal: (k: string) => void }) {
+function GoalsStep({
+  goals,
+  toggleGoal,
+  error,
+}: {
+  goals: string[]
+  toggleGoal: (k: string) => void
+  error?: string
+}) {
   return (
     <div>
       <StepHeading title="What matters most right now?" subtitle="Pick as many as you like. PULSE puts these insights first." />
+      <p className={cn('mb-5 text-xs', error ? 'font-medium text-risk' : 'text-slate')}>
+        <span className="text-risk">*</span> Choose at least one goal.
+      </p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {GOALS.map((g) => {
           const selected = goals.includes(g.key)
@@ -1220,11 +1495,52 @@ function InitStep({
   )
 }
 
-const inputClass =
-  'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/15'
+const inputBase =
+  'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:ring-2'
+const inputOk = 'border-slate-200 focus:border-brand focus:ring-brand/15'
+const inputBad = 'border-risk bg-risk/5 focus:border-risk focus:ring-risk/15'
 
-function Label({ children }: { children: ReactNode }) {
-  return <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate">{children}</span>
+function fieldClass(error?: string) {
+  return `${inputBase} ${error ? inputBad : inputOk}`
+}
+
+function wrapperClass(error?: string) {
+  return cn(
+    'flex items-center rounded-xl border bg-white focus-within:ring-2',
+    error
+      ? 'border-risk bg-risk/5 focus-within:border-risk focus-within:ring-risk/15'
+      : 'border-slate-200 focus-within:border-brand focus-within:ring-brand/15',
+  )
+}
+
+function Label({ children, required }: { children: ReactNode; required?: boolean }) {
+  return (
+    <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate">
+      {children}
+      {required && (
+        <span className="ml-0.5 text-risk" aria-hidden>
+          *
+        </span>
+      )}
+    </span>
+  )
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null
+  return (
+    <span className="mt-1.5 flex items-center gap-1 text-xs font-medium text-risk" role="alert">
+      <AlertTriangle className="h-3 w-3 shrink-0" /> {message}
+    </span>
+  )
+}
+
+function RequiredLegend() {
+  return (
+    <p className="mb-5 text-xs text-slate">
+      Fields marked <span className="text-risk">*</span> are required.
+    </p>
+  )
 }
 
 function MoneyField({
@@ -1234,6 +1550,7 @@ function MoneyField({
   value,
   onChange,
   required,
+  error,
 }: {
   label: string
   hint: string
@@ -1241,24 +1558,24 @@ function MoneyField({
   value: string
   onChange: (v: string) => void
   required?: boolean
+  error?: string
 }) {
   return (
     <label className="block">
-      <Label>
-        {label}
-        {required && <span className="text-risk"> *</span>}
-      </Label>
-      <div className="flex items-center rounded-xl border border-slate-200 bg-white focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15">
+      <Label required={required}>{label}</Label>
+      <div className={wrapperClass(error)}>
         <span className="pl-3.5 text-sm font-medium text-slate">{symbol}</span>
         <input
           inputMode="numeric"
           value={value ? Number(value).toLocaleString('en-US') : ''}
           onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ''))}
           placeholder="0"
+          aria-invalid={!!error}
+          aria-required={required}
           className="w-full bg-transparent px-2 py-2.5 text-sm text-ink outline-none"
         />
       </div>
-      <span className="mt-1 block text-xs text-slate">{hint}</span>
+      {error ? <FieldError message={error} /> : <span className="mt-1 block text-xs text-slate">{hint}</span>}
     </label>
   )
 }

@@ -54,3 +54,28 @@ def complete(messages: list[dict], temperature: float = 0.2, timeout: float = 20
     except Exception:
         logger.exception("LLM completion failed; falling back to deterministic response")
         return None
+
+
+def chat_with_tools(messages: list[dict], tools: list[dict], timeout: float = 30.0) -> dict:
+    """One tool-calling round trip. Returns the assistant message dict (which may
+    contain `tool_calls`). Raises on any failure so the caller can fall back."""
+    settings = get_settings()
+    if not is_llm_configured():
+        raise RuntimeError("LLM not configured")
+    base_url = settings.llm_base_url or PROVIDER_BASE_URLS.get(settings.llm_provider)
+    if not base_url:
+        raise RuntimeError(f"Unknown LLM provider {settings.llm_provider}")
+    response = httpx.post(
+        f"{base_url}/chat/completions",
+        headers={"Authorization": f"Bearer {settings.llm_api_key}"},
+        json={
+            "model": settings.llm_model,
+            "messages": messages,
+            "tools": tools,
+            "tool_choice": "auto",
+            "temperature": 0.1,
+        },
+        timeout=timeout,
+    )
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]

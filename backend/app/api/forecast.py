@@ -6,10 +6,12 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, require_membership
 from app.db.session import get_db
+from app.financial.engine import current_liquidity
 from app.forecasting.engine import find_shortfall, run_forecast
 from app.models.forecast import ForecastPoint, ForecastRun
 from app.models.user import User
 from app.schemas.forecast import ForecastPointOut, ForecastRunOut, ForecastRunRequest
+from app.services.alerts import evaluate_alerts
 from app.services.financial_data import load_financial_inputs
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
@@ -44,7 +46,7 @@ def run_forecast_endpoint(
     run = ForecastRun(
         organization_id=organization_id,
         horizon_days=payload.horizon_days,
-        starting_cash=starting_cash,
+        starting_cash=current_liquidity(starting_cash, transactions, as_of),
         assumptions_json=json.dumps({"method": "deterministic_baseline", "as_of": as_of.isoformat()}),
     )
     db.add(run)
@@ -62,6 +64,7 @@ def run_forecast_endpoint(
         )
     db.commit()
     db.refresh(run)
+    evaluate_alerts(db, organization_id, starting_cash, transactions, invoices, recurring)
     return _to_out(run)
 
 

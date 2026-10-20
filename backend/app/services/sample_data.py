@@ -66,6 +66,25 @@ def seed_transactions(db: Session, org_id: str, as_of: date) -> None:
                     description=description,
                 )
             )
+
+    # Two one-off payments in the period: an equipment fit-out and the quarterly VAT.
+    for days_ago, amount, category, description in [
+        (120, Decimal("9500.00"), "equipment", "Warehouse shelving and packing station fit-out"),
+        (45, Decimal("6000.00"), "tax", "Quarterly VAT payment"),
+    ]:
+        db.add(
+            Transaction(
+                organization_id=org_id,
+                date=as_of - timedelta(days=days_ago),
+                amount=amount,
+                currency="EUR",
+                category=category,
+                direction="OUT",
+                source="seed",
+                status="posted",
+                description=description,
+            )
+        )
     db.commit()
 
 

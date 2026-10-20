@@ -62,3 +62,9 @@ def test_no_shortfall_with_ample_cash():
 def test_low_confidence_without_sufficient_history():
     points = run_forecast(Decimal("1000"), [], [], [], AS_OF, 60)
     assert all(p.confidence == "low" for p in points)
+
+
+def test_forecast_starts_from_todays_cash_not_opening_balance():
+    history = [SimpleNamespace(date=AS_OF - timedelta(days=10), amount=Decimal("5000.00"), direction="IN", category="sales")]
+    points = run_forecast(Decimal("1000"), history, [], [], AS_OF, 5)
+    assert points[0].projected_cash == Decimal("6000.00")

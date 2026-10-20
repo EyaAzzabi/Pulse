@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from decimal import Decimal
 
-from app.financial.engine import net_cash_flow
+from app.financial.engine import current_liquidity, net_cash_flow
 from app.models.financial import Invoice, RecurringObligation, Transaction
 
 TWO_PLACES = Decimal("0.01")
@@ -96,7 +96,9 @@ def run_forecast(
     baseline_daily_flow = _daily_baseline_flow(transactions, as_of, recurring_categories)
 
     points: list[ForecastPointData] = []
-    running_cash = Decimal(starting_cash)
+    # `starting_cash` is the opening balance before the first recorded
+    # transaction; the forecast has to start from today's position.
+    running_cash = current_liquidity(starting_cash, transactions, as_of)
     for offset in range(1, horizon_days + 1):
         day = as_of + timedelta(days=offset)
         known = _q(_known_component_for_day(day, recurring, invoices))

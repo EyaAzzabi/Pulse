@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { api } from '../lib/api'
-import type { ChatResponse, ConversationOut } from '../types'
+import type { AgentStep, ChatResponse, ConversationOut } from '../types'
 
 export interface DisplayMessage {
   role: 'user' | 'assistant'
@@ -8,6 +8,9 @@ export interface DisplayMessage {
   aiGenerated?: boolean
   evidence?: string[]
   followUps?: string[]
+  trace?: AgentStep[]
+  chartPoints?: ChatResponse['chart_points']
+  actions?: ChatResponse['actions']
 }
 
 export function useCopilotChat(orgId: string | undefined) {
@@ -37,6 +40,9 @@ export function useCopilotChat(orgId: string | undefined) {
           aiGenerated: res.data.ai_generated,
           evidence: res.data.evidence,
           followUps: res.data.suggested_follow_ups,
+          trace: res.data.agent_trace,
+          chartPoints: res.data.chart_points,
+          actions: res.data.actions,
         },
       ])
     } catch {
@@ -48,7 +54,7 @@ export function useCopilotChat(orgId: string | undefined) {
 
   function loadConversation(conversation: ConversationOut) {
     setConversationId(conversation.id)
-    setMessages(conversation.messages.map((m) => ({ role: m.role, content: m.content })))
+    setMessages(conversation.messages.map((m) => ({ role: m.role, content: m.content, trace: m.agent_trace })))
   }
 
   function startNew() {

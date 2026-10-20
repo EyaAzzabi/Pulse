@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from decimal import Decimal
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
@@ -12,7 +13,9 @@ from app.models.organization import Organization
 from app.models.user import User
 from app.schemas.financial import CashflowPointOut, FinancialSummaryOut, InvoiceOut, TransactionOut
 from app.services.csv_import import parse_csv
+from app.services.alerts import evaluate_alerts
 from app.services.financial_data import load_financial_inputs, refresh_overdue_status
+from app.services.notifications import notify
 
 MAX_IMPORT_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB
 
@@ -31,6 +34,7 @@ def get_summary(
     refresh_overdue_status(db, organization_id, as_of)
     starting_cash, transactions, invoices, recurring = load_financial_inputs(db, organization_id)
     summary = compute_summary(starting_cash, transactions, invoices, recurring, as_of)
+    evaluate_alerts(db, organization_id, starting_cash, transactions, invoices, recurring)
     return FinancialSummaryOut(currency=org.currency if org else "EUR", **summary.__dict__)
 
 
@@ -108,6 +112,16 @@ async def import_transactions(
         )
         existing_refs.add(row.import_reference)
         imported += 1
+    if imported or result.errors:
+        notify(
+            db,
+            organization_id,
+            category="data_import",
+            severity="warning" if result.errors else "info",
+            title=f"Imported {imported} transaction(s)",
+            body=f"{skipped_duplicates} duplicate(s) skipped, {len(result.errors)} row(s) with errors.",
+            link="/dashboard",
+        )
     db.commit()
 
     return {
@@ -149,3 +163,87 @@ def list_invoices(
     if direction:
         invoices = [i for i in invoices if i.direction == direction]
     return sorted(invoices, key=lambda i: i.due_date)
+
+
+@router.get("/financial/overview")
+def get_overview(
+    organization_id: str = Query(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Dashboard panels: next 30 days of scheduled cash movements, overdue
+    receivables by age, and this month's flows against the previous month."""
+    require_membership(organization_id, user, db)
+    today = date.today()
+    horizon = today + timedelta(days=30)
+    _, transactions, invoices, recurring = load_financial_inputs(db, organization_id)
+
+    upcoming = []
+    for inv in invoices:
+        remaining = inv.amount - inv.amount_paid
+        if inv.status != "paid" and remaining > 0 and today <= inv.due_date <= horizon:
+            upcoming.append(
+                {
+                    "date": inv.due_date.isoformat(),
+                    "label": inv.counterparty_name,
+                    "kind": "receivable" if inv.direction == "RECEIVABLE" else "payable",
+                    "amount": str(remaining),
+                }
+            )
+    for ob in recurring:
+        due = ob.next_due_date
+        while due <= horizon:
+            if due >= today:
+                upcoming.append(
+                    {
+                        "date": due.isoformat(),
+                        "label": ob.name,
+                        "kind": "recurring_in" if ob.direction == "IN" else "recurring",
+                        "amount": str(ob.amount),
+                    }
+                )
+            if ob.frequency == "weekly":
+                due += timedelta(days=7)
+            else:
+                month = due.month % 12 + 1
+                year = due.year + (1 if due.month == 12 else 0)
+                try:
+                    due = due.replace(year=year, month=month)
+                except ValueError:
+                    due = due.replace(year=year, month=month, day=28)
+    upcoming.sort(key=lambda u: u["date"])
+
+    buckets = {"0-30": Decimal("0"), "31-60": Decimal("0"), "60+": Decimal("0")}
+    counts = {"0-30": 0, "31-60": 0, "60+": 0}
+    for inv in invoices:
+        remaining = inv.amount - inv.amount_paid
+        if inv.direction == "RECEIVABLE" and inv.status != "paid" and remaining > 0 and inv.due_date < today:
+            age = (today - inv.due_date).days
+            key = "0-30" if age <= 30 else "31-60" if age <= 60 else "60+"
+            buckets[key] += remaining
+            counts[key] += 1
+
+    def flows(start, end):
+        inflow = sum((t.amount for t in transactions if start <= t.date <= end and t.direction == "IN"), Decimal("0"))
+        outflow = sum((t.amount for t in transactions if start <= t.date <= end and t.direction == "OUT"), Decimal("0"))
+        return inflow, outflow
+
+    cur_in, cur_out = flows(today - timedelta(days=29), today)
+    prev_in, prev_out = flows(today - timedelta(days=59), today - timedelta(days=30))
+
+    def pct(cur, prev):
+        return None if prev == 0 else str(((cur - prev) / prev * 100).quantize(Decimal("0.1")))
+
+    return {
+        "upcoming": upcoming[:20],
+        "aging": [{"bucket": k, "amount": str(buckets[k]), "count": counts[k]} for k in buckets],
+        "changes": {
+            "inflow": str(cur_in),
+            "inflow_prev": str(prev_in),
+            "inflow_change_pct": pct(cur_in, prev_in),
+            "outflow": str(cur_out),
+            "outflow_prev": str(prev_out),
+            "outflow_change_pct": pct(cur_out, prev_out),
+        },
+        "has_data": bool(transactions or invoices),
+    }

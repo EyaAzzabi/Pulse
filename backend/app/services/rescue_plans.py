@@ -10,27 +10,35 @@ from app.simulations.engine import ScenarioAssumptions, run_simulation
 CANDIDATES = [
     {
         "key": "accelerate_collections",
-        "title": "Accelerate customer collections",
-        "rationale": "Following up on outstanding invoices to collect 10 days earlier than the current typical delay.",
-        "assumptions": ScenarioAssumptions(customer_payment_delay_days=-10),
+        "title": "Collect overdue invoices",
+        "rationale": (
+            "Send reminders on every overdue customer invoice and assume they are paid within 7 days. "
+            "Future invoices are also chased 10 days earlier."
+        ),
+        "assumptions": ScenarioAssumptions(customer_payment_delay_days=-10, collect_overdue_within_days=7),
         "feasibility": "medium",
         "cost": "low",
     },
     {
         "key": "extend_supplier_terms",
         "title": "Negotiate supplier payment extensions",
-        "rationale": "Requesting a 15-day extension on upcoming supplier payments to preserve cash.",
+        "rationale": "Ask suppliers for 15 more days on upcoming bills to keep cash in the business longer.",
         "assumptions": ScenarioAssumptions(supplier_payment_delay_days=15),
         "feasibility": "medium",
         "cost": "low",
     },
     {
-        "key": "cut_discretionary_expenses",
-        "title": "Reduce discretionary expenses",
-        "rationale": "Trimming non-essential operating expenses by 15% for the forecast horizon.",
-        "assumptions": ScenarioAssumptions(expense_change_pct=Decimal("-15")),
-        "feasibility": "high",
-        "cost": "medium",
+        "key": "short_term_credit",
+        "title": "Bridge with a short-term credit line",
+        "rationale": (
+            "Draw 5,000 from a credit line repaid at about 440 per month. Illustrative terms only, "
+            "not a lender offer."
+        ),
+        "assumptions": ScenarioAssumptions(
+            financing_amount=Decimal("5000"), financing_monthly_cost=Decimal("440")
+        ),
+        "feasibility": "medium",
+        "cost": "high",
     },
 ]
 

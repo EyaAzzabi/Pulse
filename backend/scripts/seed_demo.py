@@ -17,7 +17,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.core.security import hash_password
 from app.db.session import Base, SessionLocal, engine
+from app.models.conversation import AuditLog, ChatMessage, Conversation, Notification
 from app.models.financial import Invoice, RecurringObligation, Transaction
+from app.models.forecast import ForecastPoint, ForecastRun
+from app.models.simulation import ActionProposal, Recommendation, SimulationResult, SimulationScenario
 from app.models.organization import BusinessProfile, OnboardingProgress, Organization
 from app.models.user import Membership, User
 from app.services.sample_data import load_sample_data
@@ -32,6 +35,17 @@ def reset_demo_org(db) -> None:
     if not org:
         return
     org_id = org.id
+    run_ids = [r.id for r in db.query(ForecastRun.id).filter(ForecastRun.organization_id == org_id)]
+    if run_ids:
+        db.query(ForecastPoint).filter(ForecastPoint.forecast_run_id.in_(run_ids)).delete(synchronize_session=False)
+    scenario_ids = [s.id for s in db.query(SimulationScenario.id).filter(SimulationScenario.organization_id == org_id)]
+    if scenario_ids:
+        db.query(SimulationResult).filter(SimulationResult.scenario_id.in_(scenario_ids)).delete(synchronize_session=False)
+    conversation_ids = [c.id for c in db.query(Conversation.id).filter(Conversation.organization_id == org_id)]
+    if conversation_ids:
+        db.query(ChatMessage).filter(ChatMessage.conversation_id.in_(conversation_ids)).delete(synchronize_session=False)
+    for model in (ForecastRun, SimulationScenario, Conversation, Notification, AuditLog, ActionProposal, Recommendation):
+        db.query(model).filter(model.organization_id == org_id).delete(synchronize_session=False)
     db.query(Transaction).filter(Transaction.organization_id == org_id).delete()
     db.query(Invoice).filter(Invoice.organization_id == org_id).delete()
     db.query(RecurringObligation).filter(RecurringObligation.organization_id == org_id).delete()

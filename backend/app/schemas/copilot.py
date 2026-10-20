@@ -12,6 +12,7 @@ class ChatMessageOut(BaseModel):
     role: str
     content: str
     created_at: datetime
+    agent_trace: list[dict] = []
 
 
 class ChatResponse(BaseModel):
@@ -24,6 +25,8 @@ class ChatResponse(BaseModel):
     evidence: list[str]
     suggested_follow_ups: list[str]
     chart_points: list[dict]
+    agent_trace: list[dict] = []
+    actions: list[dict] = []
 
 
 class ConversationOut(BaseModel):

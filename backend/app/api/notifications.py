@@ -36,6 +36,37 @@ def list_notifications(
     ]
 
 
+@router.get("/unread-count")
+def unread_count(
+    organization_id: str = Query(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_membership(organization_id, user, db)
+    count = (
+        db.query(Notification)
+        .filter(Notification.organization_id == organization_id, Notification.read == False)  # noqa: E712
+        .count()
+    )
+    return {"unread": count}
+
+
+@router.post("/read-all")
+def mark_all_read(
+    organization_id: str = Query(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_membership(organization_id, user, db)
+    updated = (
+        db.query(Notification)
+        .filter(Notification.organization_id == organization_id, Notification.read == False)  # noqa: E712
+        .update({"read": True})
+    )
+    db.commit()
+    return {"marked_read": updated}
+
+
 @router.patch("/{notification_id}")
 def update_notification(
     notification_id: str,
