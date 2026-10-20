@@ -1,14 +1,27 @@
 <div align="center">
 
-<img src="frontend/public/logo-full.png" alt="PULSE AI logo" width="280" />
+<img src="docs/assets/banner.png" alt="PULSE AI: see the cash crisis before it arrives" width="100%" />
 
-# PULSE AI
+**AI cash-flow copilot for small and medium enterprises**<br/>
+Shenzhen International FinTech Competition 2026 (FinTechathon) · International Track · **Topic E**
 
-### See the cash crisis before it arrives.
+It predicts the next shortfall, simulates rescue strategies in a Financial Digital Twin,<br/>and lets AI agents propose actions that only run after a human approves them.
 
-A cash-flow copilot for small and medium enterprises: it predicts the next shortfall, simulates rescue strategies in a Financial Digital Twin, and lets AI agents propose actions that only run after a human approves them.
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-REST-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)
+![OpenAI](https://img.shields.io/badge/LLM-OpenAI%20tool%20calling-412991?logo=openai&logoColor=white)
+<br/>
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?logo=supabase&logoColor=white)
+![n8n](https://img.shields.io/badge/n8n-automations-EA4B71?logo=n8n&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-87%20passed-14B8A6)
+![Human in the loop](https://img.shields.io/badge/actions-human%20approval-0B1F3A)
 
-**Shenzhen International FinTech Competition 2026 (FinTechathon) · International Track · Topic E**
+[Why](#why-pulse-ai) · [Product](#the-product) · [Architecture](#architecture) · [Quick start](#quick-start) · [Deliverables](#competition-deliverables) · [Responsible AI](#responsible-ai)
+
+<br/>
 
 ![PULSE AI landing page](submission/screenshots/01_landing.png)
 
