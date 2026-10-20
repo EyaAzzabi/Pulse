@@ -11,6 +11,7 @@ import logging
 from datetime import date
 
 import httpx
+from pydantic import EmailStr, TypeAdapter, ValidationError
 
 from app.core.config import get_settings
 from app.models.financial import Invoice
@@ -42,6 +43,17 @@ def dispatch_action(action_type: str, details: dict) -> dict:
             "status": "QUEUED",
             "detail": "No n8n webhook configured (N8N_WEBHOOK_URL). Action recorded but not dispatched.",
         }
+    if action_type == "send_invoice_reminder":
+        drafts = details.get("drafts", [])
+        if not isinstance(drafts, list) or not drafts:
+            return {"status": "FAILED", "detail": "No reminder drafts were supplied."}
+        try:
+            for draft in drafts:
+                TypeAdapter(EmailStr).validate_python(draft.get("to", ""))
+        except (ValidationError, AttributeError):
+            return {"status": "FAILED", "detail": "Each reminder requires a valid recipient email address. Customer names cannot be used as email addresses."}
+    if not settings.n8n_webhook_secret:
+        return {"status": "FAILED", "detail": "n8n webhook authentication is not configured."}
     try:
         headers = {}
         if settings.n8n_webhook_secret:
@@ -53,6 +65,9 @@ def dispatch_action(action_type: str, details: dict) -> dict:
             timeout=10.0,
         )
         response.raise_for_status()
+        receipt = response.json()
+        if not isinstance(receipt, dict) or receipt.get("sent") is not True or not receipt.get("message_id"):
+            return {"status": "FAILED", "detail": "The workflow did not confirm email submission."}
         return {"status": "SENT", "detail": "Delivered via configured n8n webhook."}
     except Exception as exc:
         logger.exception("n8n webhook dispatch failed")

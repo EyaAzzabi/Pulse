@@ -33,9 +33,9 @@ def user_out(user):
         "email_verified": user.email_verified,
         "waiting_hours": round(max(0, (datetime.utcnow() - user.updated_at).total_seconds() / 3600), 1) if user.account_status == "PENDING" else None,
         "prechecks": [
-            {"label": "Adresse e-mail vérifiée par OTP", "passed": user.email_verified},
-            {"label": "Nom du titulaire renseigné", "passed": bool(user.full_name.strip())},
-            {"label": "Entreprise rattachée au compte", "passed": bool(user.memberships)},
+            {"label": "Email verified by one-time code", "passed": user.email_verified},
+            {"label": "Account holder name provided", "passed": bool(user.full_name.strip())},
+            {"label": "Organization linked to account", "passed": bool(user.memberships)},
         ],
         "organizations": [{"id": m.organization_id, "name": m.organization.name, "role": m.role}
                           for m in user.memberships if m.organization],
@@ -61,6 +61,8 @@ def overview(db: Session = Depends(get_db)):
 @router.get("/system")
 def system(db: Session = Depends(get_db)):
     settings = get_settings()
+    n8n_email = bool(settings.n8n_otp_webhook_url and settings.n8n_webhook_secret)
+    email_ready = n8n_email or smtp_configured()
     try:
         db.execute(text("SELECT 1"))
         database_ok = True
@@ -70,7 +72,7 @@ def system(db: Session = Depends(get_db)):
     return {
         "database": {"available": database_ok, "engine": db.get_bind().dialect.name},
         "llm": {"configured": settings.llm_provider != "none" and bool(settings.llm_api_key), "provider": settings.llm_provider, "model": settings.llm_model if settings.llm_provider != "none" else None},
-        "email": {"configured": smtp_configured(), "mode": "smtp" if smtp_configured() else "server_log"},
+        "email": {"configured": email_ready, "mode": "n8n" if n8n_email else "smtp" if smtp_configured() else "server_log" if settings.otp_allow_server_log and settings.environment.lower() in {"development", "test"} else "unconfigured"},
         "workflows": {"configured": bool(settings.n8n_webhook_url)},
         "engine": {"mode": "deterministic", "human_approval": True},
     }

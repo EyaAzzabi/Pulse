@@ -1,5 +1,6 @@
 import logging
 import smtplib
+import ssl
 from email.message import EmailMessage
 
 from app.core.config import get_settings
@@ -32,7 +33,14 @@ def send_email(to: str, subject: str, text: str, html: str | None = None) -> Non
     if html:
         msg.add_alternative(html, subtype="html")
 
-    with smtplib.SMTP(s.smtp_host, s.smtp_port, timeout=15) as server:
-        server.starttls()
+    context = ssl.create_default_context()
+    connection = smtplib.SMTP_SSL(s.smtp_host, s.smtp_port, timeout=15, context=context) if s.smtp_port == 465 else smtplib.SMTP(s.smtp_host, s.smtp_port, timeout=15)
+    with connection as server:
+        if s.smtp_port != 465:
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
         server.login(s.smtp_user, s.smtp_password)
-        server.send_message(msg)
+        refused = server.send_message(msg)
+        if refused:
+            raise smtplib.SMTPRecipientsRefused(refused)

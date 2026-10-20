@@ -5,48 +5,126 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "pulse/invoice-reminder",
-        "responseMode": "lastNode",
-        "options": {}
+        "responseMode": "responseNode",
+        "options": {},
+        "authentication": "headerAuth"
       },
       "id": "webhook-trigger",
       "name": "Webhook: Invoice Reminder",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ON_IMPORT",
+          "name": "Pulse webhook secret"
+        }
+      },
+      "webhookId": "fb9a79b9-b47e-52b4-af68-214794fe2542"
     },
     {
       "parameters": {
-        "fieldToSplitOut": "details.drafts",
-        "options": {}
+        "fieldToSplitOut": "body.details.drafts",
+        "options": {
+          "destinationFieldName": "draft"
+        }
       },
       "id": "split-drafts",
       "name": "Split Out Drafts",
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
-      "position": [460, 300]
+      "position": [
+        460,
+        300
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "billing@pulse.ai",
-        "toEmail": "={{$json.to}}",
-        "subject": "={{$json.subject}}",
-        "text": "={{$json.body}}",
-        "options": {}
+        "fromEmail": "={{$env.PULSE_EMAIL_FROM}}",
+        "toEmail": "={{$json.draft.to}}",
+        "subject": "={{$json.draft.subject}}",
+        "text": "={{$json.draft.body}}",
+        "options": {},
+        "emailFormat": "text"
       },
       "id": "send-email",
       "name": "Send Reminder Email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [680, 300],
-      "credentials": { "smtp": { "id": "SMTP_CREDENTIAL_ID", "name": "Pulse SMTP" } }
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "Pulse SMTP"
+        }
+      }
+    },
+    {
+      "id": "delivery-receipt",
+      "name": "Confirm Workflow Completion",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { completed: true, sent: true, message_id: $json.messageId || $json.id || null, status: $json.status || null } }}",
+        "options": {}
+      }
     }
   ],
   "connections": {
-    "Webhook: Invoice Reminder": { "main": [[{ "node": "Split Out Drafts", "type": "main", "index": 0 }]] },
-    "Split Out Drafts": { "main": [[{ "node": "Send Reminder Email", "type": "main", "index": 0 }]] }
+    "Webhook: Invoice Reminder": {
+      "main": [
+        [
+          {
+            "node": "Split Out Drafts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Drafts": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Confirm Workflow Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Tunis",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false
+  },
   "triggerCount": 1,
-  "_pulse_notes": "Triggered by POST /actions/{id}/execute after a user approves a 'send_invoice_reminder' action proposal. The action's details.drafts array (one entry per invoice: to/subject/body) is split and emailed individually. Pulse only marks the action SENT if this workflow (or the configured webhook) responds successfully — see app/services/workflows.py."
+  "_pulse_notes": "Accepts approved reminder drafts with real email addresses under body.details.drafts. Returns a receipt after SMTP submission."
 }

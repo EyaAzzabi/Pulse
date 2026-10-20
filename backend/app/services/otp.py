@@ -38,8 +38,11 @@ def _hash(email: str, code: str) -> str:
 
 
 def issue_code(db: Session, email: str) -> str:
-    """Creates a code, invalidates earlier ones, and delivers it. Returns
-    "email" when sent, or "server_log" when no SMTP server is configured."""
+    """Creates a code and submits it through n8n or SMTP.
+
+    Server-log delivery requires explicit development/test opt-in. A failed
+    submission removes the unseen code instead of locking out the next attempt.
+    """
     email = email.lower()
     now = datetime.utcnow()
     latest = (
@@ -55,7 +58,8 @@ def issue_code(db: Session, email: str) -> str:
         {"consumed": True}
     )
     code = generate_code()
-    db.add(EmailOtp(email=email, code_hash=_hash(email, code), expires_at=now + CODE_TTL))
+    otp = EmailOtp(email=email, code_hash=_hash(email, code), expires_at=now + CODE_TTL)
+    db.add(otp)
     db.commit()
 
     text = (
@@ -71,11 +75,19 @@ def issue_code(db: Session, email: str) -> str:
       <p style="color:#64748b;font-size:13px;margin-top:24px">The code expires in 10 minutes. If you didn't
       request it, you can ignore this email.</p>
     </div>"""
-    return _deliver(email, code, text, html)
+    try:
+        return _deliver(email, code, text, html)
+    except Exception:
+        # A failed delivery must not leave a valid unseen code or a resend lockout.
+        db.delete(otp)
+        db.commit()
+        raise
 
 
 def _send_via_n8n(email: str, code: str, html: str) -> None:
     s = get_settings()
+    if not s.n8n_webhook_secret:
+        raise EmailNotConfigured("n8n Header Auth secret is required")
     headers = {"X-Webhook-Secret": s.n8n_webhook_secret} if s.n8n_webhook_secret else {}
     response = httpx.post(
         s.n8n_otp_webhook_url,
@@ -84,6 +96,10 @@ def _send_via_n8n(email: str, code: str, html: str) -> None:
         timeout=15.0,
     )
     response.raise_for_status()
+    result = response.json()
+    # Accept the explicit workflow receipt, or Gmail's legacy last-node result.
+    if not isinstance(result, dict) or not (result.get("id") or (result.get("sent") is True and result.get("message_id"))):
+        raise RuntimeError("n8n did not confirm email submission")
 
 
 def _deliver(email: str, code: str, text: str, html: str) -> str:
@@ -95,13 +111,15 @@ def _deliver(email: str, code: str, text: str, html: str) -> str:
             _send_via_n8n(email, code, html)
             return "email"
         except Exception:
-            logger.exception("n8n verification webhook failed")
+            logger.warning("n8n verification delivery failed; checking SMTP fallback")
             if not smtp_configured():
                 raise
     try:
         send_email(email, "Your Pulse AI verification code", text, html)
         return "email"
     except EmailNotConfigured:
+        if not get_settings().otp_allow_server_log or get_settings().environment.lower() not in {"development", "test"}:
+            raise
         logger.warning("No email channel configured. Verification code for %s: %s", email, code)
         return "server_log"
 

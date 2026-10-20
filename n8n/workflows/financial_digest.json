@@ -3,13 +3,24 @@
   "nodes": [
     {
       "parameters": {
-        "rule": { "interval": [{ "field": "days", "daysInterval": 1, "triggerAtHour": 8 }] }
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 8
+            }
+          ]
+        }
       },
       "id": "schedule-trigger",
       "name": "Daily 08:00",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ]
     },
     {
       "parameters": {
@@ -23,31 +34,136 @@
       "name": "Fetch Financial Summary",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [460, 300],
-      "credentials": { "httpHeaderAuth": { "id": "PULSE_API_TOKEN", "name": "Pulse API Bearer Token" } }
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PULSE_API_TOKEN",
+          "name": "Pulse API Bearer Token"
+        }
+      }
     },
     {
       "parameters": {
-        "fromEmail": "digest@pulse.ai",
+        "fromEmail": "={{$env.PULSE_EMAIL_FROM}}",
         "toEmail": "={{$env.DIGEST_RECIPIENTS}}",
-        "subject": "Pulse AI daily digest — risk level {{$json.risk_level}}",
-        "text": "Cash: {{$json.currency}} {{$json.current_cash}}\nNet cash flow (30d): {{$json.currency}} {{$json.net_cash_flow_30d}}\nRunway: {{$json.cash_runway_days}} days\nOverdue receivables: {{$json.currency}} {{$json.overdue_receivables_amount}}\nRisk: {{$json.risk_level}} — {{$json.risk_reasons.join(' ')}}",
-        "options": {}
+        "subject": "Pulse AI daily digest \u2014 risk level {{$json.risk_level}}",
+        "text": "Cash: {{$json.currency}} {{$json.current_cash}}\nNet cash flow (30d): {{$json.currency}} {{$json.net_cash_flow_30d}}\nRunway: {{$json.cash_runway_days}} days\nOverdue receivables: {{$json.currency}} {{$json.overdue_receivables_amount}}\nRisk: {{$json.risk_level}} \u2014 {{$json.risk_reasons.join(' ')}}",
+        "options": {},
+        "emailFormat": "text"
       },
       "id": "send-digest",
       "name": "Send Digest Email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [680, 300],
-      "credentials": { "smtp": { "id": "SMTP_CREDENTIAL_ID", "name": "Pulse SMTP" } }
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "Pulse SMTP"
+        }
+      }
+    },
+    {
+      "id": "digest-webhook",
+      "name": "On-demand Digest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        100
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pulse/financial-digest",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ON_IMPORT",
+          "name": "Pulse webhook secret"
+        }
+      },
+      "webhookId": "e5179c2d-76fa-595f-bd98-454b473135ad"
+    },
+    {
+      "id": "delivery-receipt",
+      "name": "Confirm Workflow Completion",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { completed: true, sent: true, message_id: $json.messageId || $json.id || null, status: $json.status || null } }}",
+        "options": {}
+      }
     }
   ],
   "connections": {
-    "Daily 08:00": { "main": [[{ "node": "Fetch Financial Summary", "type": "main", "index": 0 }]] },
-    "Fetch Financial Summary": { "main": [[{ "node": "Send Digest Email", "type": "main", "index": 0 }]] }
+    "Daily 08:00": {
+      "main": [
+        [
+          {
+            "node": "Fetch Financial Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Financial Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Digest Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On-demand Digest": {
+      "main": [
+        [
+          {
+            "node": "Fetch Financial Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Digest Email": {
+      "main": [
+        [
+          {
+            "node": "Confirm Workflow Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Tunis",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false
+  },
   "triggerCount": 1,
-  "_pulse_notes": "Pulls the live /financial/summary endpoint (real numbers, not invented) and emails opted-in users. Requires PULSE_API_BASE_URL, PULSE_ORGANIZATION_ID and DIGEST_RECIPIENTS as n8n environment variables, plus a bearer token credential for a service account."
+  "_pulse_notes": "Reads real financial-engine data with a tenant-scoped bearer token; enable the schedule only for opted-in recipients."
 }

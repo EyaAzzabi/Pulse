@@ -10,6 +10,7 @@ os.environ["SMTP_HOST"] = ""
 os.environ["N8N_OTP_WEBHOOK_URL"] = ""
 os.environ["N8N_WEBHOOK_URL"] = ""
 os.environ["LLM_PROVIDER"] = "none"
+os.environ["OTP_ALLOW_SERVER_LOG"] = "true"
 
 import pytest
 from fastapi.testclient import TestClient

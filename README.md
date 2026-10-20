@@ -42,6 +42,7 @@ feature by feature, honestly: `docs/FEATURE_STATUS.md`.
 cd backend
 python -m venv .venv
 ./.venv/Scripts/pip install -r requirements.txt     # macOS/Linux: .venv/bin/pip
+./.venv/Scripts/python -m alembic upgrade head
 ./.venv/Scripts/python scripts/seed_demo.py          # seeds the Northstar Studio demo org
 ./.venv/Scripts/python -m uvicorn app.main:app --reload --port 8000
 ```
@@ -121,3 +122,11 @@ n8n/        Exportable n8n workflow JSON (cash alerts, reminders, digests)
 demo/       (reserved for exported demo datasets/scenarios)
 docs/       Architecture, competition submission, demo script, feature status
 ```
+
+## Administration and email verification
+
+See [docs/ADMIN.md](docs/ADMIN.md) for account approval and administrator setup.
+New signups require a real email channel: configure SMTP or the OTP n8n webhook
+in backend/.env. See [n8n/README.md](n8n/README.md) for all five workflows and
+the direct Gmail SMTP fallback. Secrets and local administrator credentials
+are excluded from Git.

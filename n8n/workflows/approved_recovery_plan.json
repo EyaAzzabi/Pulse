@@ -5,19 +5,30 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "pulse/recovery-plan-approved",
-        "responseMode": "lastNode",
-        "options": {}
+        "responseMode": "responseNode",
+        "options": {},
+        "authentication": "headerAuth"
       },
       "id": "webhook-trigger",
       "name": "Webhook: Recovery Plan Approved",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ON_IMPORT",
+          "name": "Pulse webhook secret"
+        }
+      },
+      "webhookId": "11148f86-f5b3-531a-ad10-193d035a0f7b"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.PULSE_API_BASE_URL}}/actions/{{$json.details.action_id}}/execute?organization_id={{$json.details.organization_id}}",
+        "url": "={{$env.PULSE_API_BASE_URL}}/actions/{{$json.body.details.action_id}}/execute?organization_id={{$json.body.details.organization_id}}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "options": {}
@@ -26,8 +37,16 @@
       "name": "Confirm Execution With Pulse",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [460, 300],
-      "credentials": { "httpHeaderAuth": { "id": "PULSE_API_TOKEN", "name": "Pulse API Bearer Token" } }
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PULSE_API_TOKEN",
+          "name": "Pulse API Bearer Token"
+        }
+      }
     },
     {
       "parameters": {},
@@ -35,15 +54,71 @@
       "name": "Execution Recorded",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [680, 300]
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "id": "delivery-receipt",
+      "name": "Confirm Workflow Completion",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { completed: $json.status === \"SENT\", sent: $json.status === \"SENT\", message_id: null, status: $json.status } }}",
+        "options": {}
+      }
     }
   ],
   "connections": {
-    "Webhook: Recovery Plan Approved": { "main": [[{ "node": "Confirm Execution With Pulse", "type": "main", "index": 0 }]] },
-    "Confirm Execution With Pulse": { "main": [[{ "node": "Execution Recorded", "type": "main", "index": 0 }]] }
+    "Webhook: Recovery Plan Approved": {
+      "main": [
+        [
+          {
+            "node": "Confirm Execution With Pulse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Execution With Pulse": {
+      "main": [
+        [
+          {
+            "node": "Execution Recorded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Recorded": {
+      "main": [
+        [
+          {
+            "node": "Confirm Workflow Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Tunis",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false
+  },
   "triggerCount": 1,
-  "_pulse_notes": "Pulse's own /actions/{id}/execute endpoint already re-validates organization membership, approval status and idempotency server-side before running anything (see app/api/actions.py). This workflow is an optional external trigger point (e.g. a Slack approval button) that calls back into that same guarded endpoint rather than re-implementing authorization in n8n."
+  "_pulse_notes": "Calls the guarded PULSE execution endpoint; the action must already be approved. Does not bypass authorization or replay protection."
 }
