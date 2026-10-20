@@ -1,0 +1,1022 @@
+{
+  "email_otps": [
+    {
+      "column": "email",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "code_hash",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "expires_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "attempts",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "consumed",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "organizations": [
+    {
+      "column": "name",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "industry",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "country",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "currency",
+      "type": "VARCHAR(3)",
+      "nullable": false
+    },
+    {
+      "column": "company_size",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "timezone",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "is_demo",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "users": [
+    {
+      "column": "email",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "password_hash",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "full_name",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "preferred_language",
+      "type": "VARCHAR(10)",
+      "nullable": false
+    },
+    {
+      "column": "default_currency",
+      "type": "VARCHAR(3)",
+      "nullable": false
+    },
+    {
+      "column": "timezone",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "is_active",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "is_admin",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "account_status",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "review_reason",
+      "type": "VARCHAR(1000)",
+      "nullable": false
+    },
+    {
+      "column": "email_verified",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "account_reviews": [
+    {
+      "column": "actor_user_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "target_user_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "previous_status",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "new_status",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "reason",
+      "type": "VARCHAR(1000)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "action_proposals": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_by_user_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "action_type",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "target_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "details_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "expected_result",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "risks",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "evidence_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "requires_approval",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "status",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "approved_by_user_id",
+      "type": "VARCHAR(36)",
+      "nullable": true
+    },
+    {
+      "column": "approved_at",
+      "type": "VARCHAR(32)",
+      "nullable": true
+    },
+    {
+      "column": "execution_result_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "audit_logs": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "actor_user_id",
+      "type": "VARCHAR(36)",
+      "nullable": true
+    },
+    {
+      "column": "event_type",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "details_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "business_profiles": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "monthly_revenue_estimate",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "monthly_fixed_expenses_estimate",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "current_cash_balance",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "customer_payment_delay_days",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "supplier_payment_delay_days",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "employee_count",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "payroll_frequency",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "risk_tolerance",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "alert_sensitivity",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "forecast_horizon_days",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "conversations": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "user_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "title",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "forecast_runs": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "horizon_days",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "method",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "assumptions_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "starting_cash",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "invoices": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "direction",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "counterparty_name",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "amount",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "amount_paid",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "currency",
+      "type": "VARCHAR(3)",
+      "nullable": false
+    },
+    {
+      "column": "issue_date",
+      "type": "DATE",
+      "nullable": false
+    },
+    {
+      "column": "due_date",
+      "type": "DATE",
+      "nullable": false
+    },
+    {
+      "column": "status",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "reference",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "memberships": [
+    {
+      "column": "user_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "role",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "notifications": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "user_id",
+      "type": "VARCHAR(36)",
+      "nullable": true
+    },
+    {
+      "column": "category",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "severity",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "title",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "body",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "link",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "read",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "onboarding_progress": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "current_step",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "completed",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "data_json",
+      "type": "VARCHAR",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "recommendations": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "title",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "rationale",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "expected_impact",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "risk_level",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "requires_approval",
+      "type": "BOOLEAN",
+      "nullable": false
+    },
+    {
+      "column": "status",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "evidence_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "recurring_obligations": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "name",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "amount",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "category",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "frequency",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "next_due_date",
+      "type": "DATE",
+      "nullable": false
+    },
+    {
+      "column": "direction",
+      "type": "VARCHAR(8)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "simulation_scenarios": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_by_user_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "name",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "assumptions_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "transactions": [
+    {
+      "column": "organization_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "date",
+      "type": "DATE",
+      "nullable": false
+    },
+    {
+      "column": "amount",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "currency",
+      "type": "VARCHAR(3)",
+      "nullable": false
+    },
+    {
+      "column": "category",
+      "type": "VARCHAR(64)",
+      "nullable": false
+    },
+    {
+      "column": "direction",
+      "type": "VARCHAR(8)",
+      "nullable": false
+    },
+    {
+      "column": "source",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "status",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "description",
+      "type": "VARCHAR(255)",
+      "nullable": false
+    },
+    {
+      "column": "import_reference",
+      "type": "VARCHAR(128)",
+      "nullable": true
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "chat_messages": [
+    {
+      "column": "conversation_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "role",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "content",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "metadata_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "forecast_points": [
+    {
+      "column": "forecast_run_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "date",
+      "type": "DATE",
+      "nullable": false
+    },
+    {
+      "column": "projected_cash",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "known_component",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "uncertain_component",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "confidence",
+      "type": "VARCHAR(16)",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ],
+  "simulation_results": [
+    {
+      "column": "scenario_id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "lowest_cash_point",
+      "type": "NUMERIC(14, 2)",
+      "nullable": false
+    },
+    {
+      "column": "lowest_cash_date",
+      "type": "VARCHAR(32)",
+      "nullable": false
+    },
+    {
+      "column": "runway_days",
+      "type": "INTEGER",
+      "nullable": true
+    },
+    {
+      "column": "days_below_zero",
+      "type": "INTEGER",
+      "nullable": false
+    },
+    {
+      "column": "impact_vs_baseline_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "baseline_points_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "simulated_points_json",
+      "type": "TEXT",
+      "nullable": false
+    },
+    {
+      "column": "id",
+      "type": "VARCHAR(36)",
+      "nullable": false
+    },
+    {
+      "column": "created_at",
+      "type": "DATETIME",
+      "nullable": false
+    },
+    {
+      "column": "updated_at",
+      "type": "DATETIME",
+      "nullable": false
+    }
+  ]
+}

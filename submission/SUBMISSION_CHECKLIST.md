@@ -1,13 +1,16 @@
-# Submission checklist (deadline 20 Oct 2026, 23:59 Beijing = 16:59 Tunisia)
+# Delivery checklist
 
-| # | Item | Status | File |
-|---|---|---|---|
-| 01 | Technical documentation (architecture, core algorithms, security design) | COMPLETE | PULSE_Technical_Documentation.pdf |
-| 02 | Presentation deck (10 slides, under 10 minutes, presenter notes) | COMPLETE | PULSE_Presentation.pptx, PULSE_Presentation.pdf |
-| 03 | Demo video (optional, max 5 min) | NOT STARTED (recording guide ready) | VIDEO_RECORDING_GUIDE.md |
-| 04 | Source code with README, GitHub link, deployment instructions, test cases | COMPLETE | README.md, SOURCE_CODE_INFORMATION.md, backend/tests |
-| 05 | Security self-assessment (permission tiers, known risks) | COMPLETE | PULSE_Security_Self_Assessment.pdf |
-| 06 | Execution evidence (sandbox logs, API evidence, tests) | COMPLETE | execution_evidence/, screenshots/ |
-| | Code pushed to GitHub main | COMPLETE when `git push` succeeds | |
-| | ZIP package | COMPLETE | PULSE_FinTechathon_2026.zip |
-| | **Official upload on the competition portal** | **NOT DONE BY THIS PACKAGE: upload manually before the deadline** | |
+- [x] Technical documentation PDF generated and opened successfully: 14 pages.
+- [x] Security self-assessment PDF generated and opened successfully: 11 pages.
+- [x] Editable presentation: 10 slides with speaker notes.
+- [x] Presentation PDF: 10 pages.
+- [x] Genuine browser demo MP4 included.
+- [x] 12 actual screenshots included.
+- [x] Backend evidence: 86 tests passed.
+- [x] Frontend production build succeeded; bundle-size warning retained.
+- [x] Actual API responses and independently checked financial results included.
+- [x] Supabase PostgreSQL shared deployment distinguished from isolated SQLite test evidence.
+- [x] Source repository and reviewed local commit identified.
+- [x] Credentials, private runtime state and production databases excluded.
+- [ ] Competition portal upload and receipt: must be completed by the team.
+- [ ] Shared Supabase deployment connectivity: not certified by the local evidence run.

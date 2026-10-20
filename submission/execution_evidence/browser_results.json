@@ -1,0 +1,20 @@
+{
+  "viewport": "1440x900",
+  "device_scale": 1.5,
+  "mocked_network": false,
+  "browser_errors": [],
+  "screenshots": [
+    "01_landing.png",
+    "02_authentication.png",
+    "03_business_onboarding.png",
+    "04_financial_dashboard.png",
+    "05_cashflow_forecast.png",
+    "06_liquidity_risk_alert.png",
+    "07_ai_copilot.png",
+    "08_digital_twin_simulator.png",
+    "09_scenario_comparison.png",
+    "10_human_approval.png",
+    "11_execution_history.png"
+  ],
+  "video_source": "real Playwright recording, synthetic backend only"
+}
