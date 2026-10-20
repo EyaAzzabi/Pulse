@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     smtp_user: str | None = None
     smtp_password: str | None = None
     smtp_from: str | None = None
+    otp_allow_server_log: bool = False
 
     @property
     def cors_origin_list(self) -> list[str]:

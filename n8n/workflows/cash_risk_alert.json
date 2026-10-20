@@ -5,24 +5,42 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "pulse/cash-risk-alert",
-        "responseMode": "lastNode",
-        "options": {}
+        "responseMode": "responseNode",
+        "options": {},
+        "authentication": "headerAuth"
       },
       "id": "webhook-trigger",
       "name": "Webhook: Cash Risk Alert",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ON_IMPORT",
+          "name": "Pulse webhook secret"
+        }
+      },
+      "webhookId": "ae46386c-e66c-5416-ae1f-6332dfe57d18"
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
           "conditions": [
             {
-              "leftValue": "={{$json.action_type}}",
+              "leftValue": "={{$json.body.action_type}}",
               "rightValue": "cash_risk_alert",
-              "operator": { "type": "string", "operation": "equals" }
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ],
           "combinator": "and"
@@ -32,43 +50,119 @@
       "name": "Is cash_risk_alert?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [460, 300]
+      "position": [
+        460,
+        300
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "alerts@pulse.ai",
-        "toEmail": "={{$json.details.recipient_email}}",
-        "subject": "Pulse AI — cash risk detected ({{$json.details.risk_level}})",
-        "text": "={{$json.details.message}}\n\nEvidence: {{JSON.stringify($json.details.evidence)}}",
-        "options": {}
+        "fromEmail": "={{$env.PULSE_EMAIL_FROM}}",
+        "toEmail": "={{$json.body.details.recipient_email}}",
+        "subject": "=Pulse AI - cash risk detected ({{$json.body.details.risk_level}})",
+        "text": "={{$json.body.details.message}}\n\nEvidence: {{JSON.stringify($json.body.details.evidence)}}",
+        "options": {},
+        "emailFormat": "text"
       },
       "id": "send-email",
       "name": "Send Email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [680, 240],
-      "credentials": { "smtp": { "id": "SMTP_CREDENTIAL_ID", "name": "Pulse SMTP" } }
+      "position": [
+        680,
+        240
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "Pulse SMTP"
+        }
+      }
     },
     {
-      "parameters": {},
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { completed: false, sent: false, reason: \"Unsupported action type\" } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
       "id": "noop-ignored",
       "name": "Ignored (not this workflow)",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [680, 400]
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        680,
+        400
+      ]
+    },
+    {
+      "id": "delivery-receipt",
+      "name": "Confirm Workflow Completion",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { completed: true, sent: true, message_id: $json.messageId || $json.id || null, status: $json.status || null } }}",
+        "options": {}
+      }
     }
   ],
   "connections": {
-    "Webhook: Cash Risk Alert": { "main": [[{ "node": "Is cash_risk_alert?", "type": "main", "index": 0 }]] },
+    "Webhook: Cash Risk Alert": {
+      "main": [
+        [
+          {
+            "node": "Is cash_risk_alert?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Is cash_risk_alert?": {
       "main": [
-        [{ "node": "Send Email", "type": "main", "index": 0 }],
-        [{ "node": "Ignored (not this workflow)", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignored (not this workflow)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Confirm Workflow Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Tunis",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false
+  },
   "triggerCount": 1,
-  "_pulse_notes": "Pulse's backend POSTs { action_type, details } to this webhook URL (see N8N_WEBHOOK_URL) when a forecast crosses a configured risk threshold. Import this file via n8n UI > Workflows > Import from File, then attach a real SMTP credential before activating."
+  "_pulse_notes": "Authenticated receiver for explicitly supplied risk alerts; the backend does not automatically emit threshold events yet."
 }

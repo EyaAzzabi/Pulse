@@ -6,7 +6,9 @@ backend/__pycache__/
 backend/*.db
 backend/test_pulse.db
 backend/.env
+backend/.admin-local-credentials
 .env
+.runtime/
 
 # Node / frontend
 frontend/node_modules/

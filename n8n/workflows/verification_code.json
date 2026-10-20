@@ -6,42 +6,98 @@
         "httpMethod": "POST",
         "path": "pulse/verification-code",
         "authentication": "headerAuth",
-        "responseMode": "lastNode",
+        "responseMode": "responseNode",
         "options": {}
       },
       "id": "a1f2c3d4-0001-4b5e-9a10-000000000001",
       "name": "Webhook: Verification Code",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300],
-      "webhookId": "pulse-verification-code",
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "856c16ca-2153-5a06-88f7-423e810f2ced",
       "credentials": {
-        "httpHeaderAuth": { "id": "REPLACE_ON_IMPORT", "name": "Pulse webhook secret" }
+        "httpHeaderAuth": {
+          "id": "REPLACE_ON_IMPORT",
+          "name": "Pulse webhook secret"
+        }
       }
     },
     {
       "parameters": {
-        "sendTo": "={{ $json.body.email }}",
-        "subject": "={{ $json.body.subject }}",
-        "emailType": "html",
-        "message": "={{ $json.body.html }}",
-        "options": { "appendAttribution": false }
+        "fromEmail": "={{$env.PULSE_EMAIL_FROM}}",
+        "toEmail": "={{$json.body.email}}",
+        "subject": "={{$json.body.subject}}",
+        "emailFormat": "html",
+        "html": "={{$json.body.html}}",
+        "options": {
+          "appendAttribution": false
+        }
       },
       "id": "a1f2c3d4-0002-4b5e-9a10-000000000002",
-      "name": "Send Code with Gmail",
-      "type": "n8n-nodes-base.gmail",
+      "name": "Send Code with SMTP",
+      "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [480, 300],
+      "position": [
+        480,
+        300
+      ],
       "credentials": {
-        "gmailOAuth2": { "id": "REPLACE_ON_IMPORT", "name": "Pulse Gmail" }
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "Pulse SMTP"
+        }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { sent: true, message_id: $json.messageId || $json.id } }}",
+        "options": {}
+      },
+      "id": "pulse-otp-receipt",
+      "name": "Confirm Email Submission",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        720,
+        300
+      ]
     }
   ],
   "connections": {
     "Webhook: Verification Code": {
-      "main": [[{ "node": "Send Code with Gmail", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Send Code with SMTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Code with SMTP": {
+      "main": [
+        [
+          {
+            "node": "Confirm Email Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" }
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false,
+    "timezone": "Africa/Tunis"
+  }
 }

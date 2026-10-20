@@ -11,6 +11,9 @@ class _Resp:
         if self.status_code >= 400:
             raise httpx.HTTPStatusError("error", request=None, response=None)
 
+    def json(self):
+        return {"sent": True, "message_id": "gmail-message-id"}
+
 
 def _use_n8n(monkeypatch, status_code: int, calls: list):
     settings = get_settings()

@@ -7,7 +7,7 @@ import { Button } from '../components/ui/Button'
 export function Login() {
   const { login, me } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('owner@northstarstudio.demo')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -36,8 +36,7 @@ export function Login() {
         <div className="rounded-2xl border border-slate-200 bg-white p-6">
           <h1 className="mb-1 text-lg font-semibold text-ink">Sign in</h1>
           <p className="mb-6 text-sm text-slate">
-            Use the demo credentials printed by <code className="text-brand">scripts/seed_demo.py</code>, or
-            your own account.
+            Sign in to your PULSE workspace. Administrators are directed to the control center.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
