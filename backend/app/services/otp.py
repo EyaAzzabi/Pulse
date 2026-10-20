@@ -6,11 +6,12 @@ import logging
 import secrets
 from datetime import datetime, timedelta
 
+import httpx
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.models.otp import EmailOtp
-from app.services.email import EmailNotConfigured, send_email
+from app.services.email import EmailNotConfigured, send_email, smtp_configured
 
 logger = logging.getLogger(__name__)
 
@@ -70,11 +71,38 @@ def issue_code(db: Session, email: str) -> str:
       <p style="color:#64748b;font-size:13px;margin-top:24px">The code expires in 10 minutes. If you didn't
       request it, you can ignore this email.</p>
     </div>"""
+    return _deliver(email, code, text, html)
+
+
+def _send_via_n8n(email: str, code: str, html: str) -> None:
+    s = get_settings()
+    headers = {"X-Webhook-Secret": s.n8n_webhook_secret} if s.n8n_webhook_secret else {}
+    response = httpx.post(
+        s.n8n_otp_webhook_url,
+        json={"email": email, "code": code, "subject": "Your Pulse AI verification code", "html": html},
+        headers=headers,
+        timeout=15.0,
+    )
+    response.raise_for_status()
+
+
+def _deliver(email: str, code: str, text: str, html: str) -> str:
+    """n8n first (when configured), then SMTP, then the server log. A configured
+    channel that fails never degrades silently to the log: with no other channel
+    left it raises, so the API returns an error instead of a code nobody gets."""
+    if get_settings().n8n_otp_webhook_url:
+        try:
+            _send_via_n8n(email, code, html)
+            return "email"
+        except Exception:
+            logger.exception("n8n verification webhook failed")
+            if not smtp_configured():
+                raise
     try:
         send_email(email, "Your Pulse AI verification code", text, html)
         return "email"
     except EmailNotConfigured:
-        logger.warning("SMTP not configured. Verification code for %s: %s", email, code)
+        logger.warning("No email channel configured. Verification code for %s: %s", email, code)
         return "server_log"
 
 

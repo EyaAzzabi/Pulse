@@ -7,6 +7,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ["DATABASE_URL"] = "sqlite:///./test_pulse.db"
 os.environ["JWT_SECRET"] = "test-secret"
 os.environ["SMTP_HOST"] = ""
+os.environ["N8N_OTP_WEBHOOK_URL"] = ""
+os.environ["N8N_WEBHOOK_URL"] = ""
 os.environ["LLM_PROVIDER"] = "none"
 
 import pytest

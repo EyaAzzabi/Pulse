@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     llm_base_url: str | None = None  # override for OpenAI-compatible endpoints
 
     n8n_webhook_url: str | None = None
+    n8n_otp_webhook_url: str | None = None
     n8n_webhook_secret: str | None = None
 
     smtp_host: str | None = None

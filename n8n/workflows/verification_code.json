@@ -1,0 +1,47 @@
+{
+  "name": "Pulse AI - Verification Code",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pulse/verification-code",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a1f2c3d4-0001-4b5e-9a10-000000000001",
+      "name": "Webhook: Verification Code",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "pulse-verification-code",
+      "credentials": {
+        "httpHeaderAuth": { "id": "REPLACE_ON_IMPORT", "name": "Pulse webhook secret" }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "={{ $json.body.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.body.html }}",
+        "options": { "appendAttribution": false }
+      },
+      "id": "a1f2c3d4-0002-4b5e-9a10-000000000002",
+      "name": "Send Code with Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [480, 300],
+      "credentials": {
+        "gmailOAuth2": { "id": "REPLACE_ON_IMPORT", "name": "Pulse Gmail" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Verification Code": {
+      "main": [[{ "node": "Send Code with Gmail", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
