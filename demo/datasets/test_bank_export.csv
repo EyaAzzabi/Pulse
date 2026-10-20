@@ -1,0 +1,52 @@
+Date,Description,Amount,Type,Category
+23/07/2026,Card payment - Shopify subscription,79.00,Debit,Software
+24/07/2026,Transfer from Maison Lumiere SARL,3850.00,Credit,Sales
+25/07/2026,Transfer from Cafe Olive,1240.00,Credit,Sales
+27/07/2026,Rent - Atelier Bastille,1800.00,Debit,Rent
+29/07/2026,Stripe payout,2310.45,Credit,Sales
+31/07/2026,Supplier - Papeterie Martin,640.00,Debit,Supplies
+02/08/2026,Transfer from Hotel Riviera,2900.00,Credit,Sales
+03/08/2026,Electricity - EDF,185.30,Debit,Utilities
+05/08/2026,Stripe payout,1975.20,Credit,Sales
+07/08/2026,Google Ads,420.00,Debit,Marketing
+09/08/2026,Supplier - Atelier Bois & Co,1150.00,Debit,Supplies
+11/08/2026,Transfer from Studio Nord,1680.00,Credit,Sales
+12/08/2026,Stripe payout,2140.80,Credit,Sales
+14/08/2026,Insurance - AXA Pro,96.50,Debit,Insurance
+16/08/2026,Accountant fees,350.00,Debit,Professional fees
+18/08/2026,Salaries,6200.00,Debit,Payroll
+19/08/2026,Bank fees,18.90,Debit,Bank fees
+22/08/2026,Card payment - Shopify subscription,79.00,Debit,Software
+23/08/2026,Transfer from Maison Lumiere SARL,3850.00,Credit,Sales
+24/08/2026,Transfer from Cafe Olive,1240.00,Credit,Sales
+26/08/2026,Rent - Atelier Bastille,1800.00,Debit,Rent
+28/08/2026,Stripe payout,2310.45,Credit,Sales
+30/08/2026,Supplier - Papeterie Martin,640.00,Debit,Supplies
+01/09/2026,Transfer from Hotel Riviera,2900.00,Credit,Sales
+02/09/2026,Electricity - EDF,185.30,Debit,Utilities
+04/09/2026,Stripe payout,1975.20,Credit,Sales
+06/09/2026,Google Ads,420.00,Debit,Marketing
+08/09/2026,Supplier - Atelier Bois & Co,1150.00,Debit,Supplies
+10/09/2026,Transfer from Studio Nord,1680.00,Credit,Sales
+11/09/2026,Stripe payout,2140.80,Credit,Sales
+13/09/2026,Insurance - AXA Pro,96.50,Debit,Insurance
+15/09/2026,Accountant fees,350.00,Debit,Professional fees
+17/09/2026,Salaries,6200.00,Debit,Payroll
+18/09/2026,Bank fees,18.90,Debit,Bank fees
+21/09/2026,Card payment - Shopify subscription,79.00,Debit,Software
+22/09/2026,Transfer from Maison Lumiere SARL,3850.00,Credit,Sales
+23/09/2026,Transfer from Cafe Olive,1240.00,Credit,Sales
+25/09/2026,Rent - Atelier Bastille,1800.00,Debit,Rent
+27/09/2026,Stripe payout,2310.45,Credit,Sales
+29/09/2026,Supplier - Papeterie Martin,640.00,Debit,Supplies
+01/10/2026,Transfer from Hotel Riviera,2900.00,Credit,Sales
+02/10/2026,Electricity - EDF,185.30,Debit,Utilities
+04/10/2026,Stripe payout,1975.20,Credit,Sales
+06/10/2026,Google Ads,420.00,Debit,Marketing
+08/10/2026,Supplier - Atelier Bois & Co,1150.00,Debit,Supplies
+10/10/2026,Transfer from Studio Nord,1680.00,Credit,Sales
+11/10/2026,Stripe payout,2140.80,Credit,Sales
+13/10/2026,Insurance - AXA Pro,96.50,Debit,Insurance
+15/10/2026,Accountant fees,350.00,Debit,Professional fees
+17/10/2026,Salaries,6200.00,Debit,Payroll
+18/10/2026,Bank fees,18.90,Debit,Bank fees
