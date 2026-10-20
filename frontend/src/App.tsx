@@ -12,16 +12,28 @@ import { Notifications } from './pages/Notifications'
 import { Onboarding } from './pages/Onboarding'
 import { Settings } from './pages/Settings'
 import { Simulator } from './pages/Simulator'
+import { Admin } from './pages/Admin'
+import { AccountStatus } from './pages/AccountStatus'
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth()
+function ProtectedRoute({ children, statusOnly = false, admin = false }: { children: React.ReactNode; statusOnly?: boolean; admin?: boolean }) {
+  const { isAuthenticated, isLoading, me } = useAuth()
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-midnight text-slate">Loading…</div>
   }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
+  if (!statusOnly && me?.user.account_status !== 'APPROVED') return <Navigate to="/account-status" replace />
+  if (admin && !me?.user.is_admin) return <Navigate to="/dashboard" replace />
+  if (!admin && !statusOnly && me?.user.is_admin) return <Navigate to="/admin" replace />
   return <>{children}</>
+}
+
+function SignupRoute() {
+  const { me } = useAuth()
+  if (me?.user.is_admin) return <Navigate to="/admin" replace />
+  if (me && me.user.account_status !== 'APPROVED') return <Navigate to="/account-status" replace />
+  return <Onboarding />
 }
 
 export default function App() {
@@ -29,7 +41,9 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Onboarding />} />
+      <Route path="/signup" element={<SignupRoute />} />
+      <Route path="/account-status" element={<ProtectedRoute statusOnly><AccountStatus /></ProtectedRoute>} />
+      <Route path="/admin/*" element={<ProtectedRoute admin><Admin /></ProtectedRoute>} />
 
       <Route
         path="/onboarding"

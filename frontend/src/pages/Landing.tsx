@@ -1,7 +1,11 @@
+import { useState } from 'react'
+import './Landing.css'
 import { motion } from 'framer-motion'
 import {
   AlertTriangle,
   ArrowRight,
+  ArrowUpRight,
+  Activity,
   Bot,
   Check,
   Clock,
@@ -66,7 +70,7 @@ const ACTION_STEPS = [
 
 export function Landing() {
   return (
-    <div className="min-h-screen bg-midnight text-ink">
+    <div className="pulse-landing min-h-screen bg-midnight text-ink">
       {/* Dark hero band, the one deliberately "heavy" section; everything below is light. */}
       <div className="relative overflow-hidden bg-slate-900 text-white">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(29,78,216,0.25),_transparent_60%)]" />
@@ -213,194 +217,97 @@ export function Landing() {
             </div>
           ))}
         </div>
+
+        <div className="relative border-t border-white/10 px-6 py-10 sm:py-14">
+          <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">
+                <Activity className="h-4 w-4" /> Your next decision, clearer
+              </div>
+              <h2 className="max-w-xl text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                From scattered numbers to one calm, confident view.
+              </h2>
+              <p className="mt-3 max-w-lg text-sm leading-6 text-slate-300">
+                PULSE turns your everyday financial signals into a simple conversation about what to do next —
+                before a risk becomes a crisis.
+              </p>
+              <a href="#how-it-works" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-blue-300 hover:text-white">
+                See how it works <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 shadow-2xl backdrop-blur-sm sm:p-5">
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span>Cash position · next 30 days</span>
+                <span className="rounded-full bg-emerald-400/10 px-2 py-1 font-medium text-emerald-300">Healthy trend</span>
+              </div>
+              <div className="mt-5 flex h-28 items-end gap-2 sm:gap-3">
+                {[34, 42, 38, 52, 48, 64, 60, 76, 72, 88, 84, 96].map((height, index) => (
+                  <div key={index} className="group relative flex h-full flex-1 items-end">
+                    <div
+                      className="w-full rounded-t-md bg-gradient-to-t from-blue-700 to-cyan-300 opacity-80 transition-all duration-300 group-hover:opacity-100"
+                      style={{ height: `${height}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex justify-between border-t border-white/10 pt-3 text-[11px] text-slate-500">
+                <span>Today</span><span>+15 days</span><span>+30 days</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Problem */}
-      <section id="platform" className="mx-auto max-w-7xl px-6 py-16">
-        <h2 className="text-center text-sm font-medium uppercase tracking-wider text-brand">The problem</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-2xl font-medium text-ink">
-          SMEs rarely have a CFO. Owners find out about a cash shortfall when it has already happened.
-        </p>
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <ProblemCard
-            icon={Clock}
-            title="Too late to act"
-            desc="Spreadsheets show what already happened, not what's coming."
-          />
-          <ProblemCard
-            icon={AlertTriangle}
-            title="Hidden risk"
-            desc="A single late-paying customer or one large purchase can quietly tip the balance."
-          />
-          <ProblemCard
-            icon={MessageSquareText}
-            title="No one to ask"
-            desc="Generic chatbots guess. Owners need answers grounded in their real numbers."
-          />
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how-it-works" className="bg-slate-50 px-6 py-16">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="mb-10 text-center text-2xl font-semibold text-ink">How Pulse works</h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
-            <FeatureCard icon={Wallet} title="Understand" desc="A deterministic financial engine computes real liquidity, burn rate and risk from your data." />
-            <FeatureCard icon={LineChart} title="Anticipate" desc="A baseline forecast separates known obligations from uncertain day-to-day flow." />
-            <FeatureCard icon={Sliders} title="Simulate" desc="The Financial Digital Twin stress-tests decisions without touching real records." />
-            <FeatureCard icon={ShieldCheck} title="Act, with approval" desc="Every consequential action is proposed, explained, and only runs after you approve it." />
+      <main className="landing-story">
+        <section id="platform" className="story-section problem-section">
+          <div className="section-heading split-heading">
+            <div><span className="eyebrow">01 / A clearer perspective</span><h2>Cash surprises.<br /><span>You shouldn't have to.</span></h2></div>
+            <p>SMEs rarely have a CFO. Owners often discover a cash shortfall after it happens. PULSE helps you see the signals sooner.</p>
           </div>
-        </div>
-      </section>
-
-      {/* Digital Twin */}
-      <section id="digital-twin" className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid grid-cols-1 items-center gap-10 sm:grid-cols-2">
-          <div>
-            <h2 className="text-sm font-medium uppercase tracking-wider text-brand">The Financial Digital Twin</h2>
-            <p className="mt-3 text-2xl font-medium text-ink">
-              Test a decision before you make it. Nothing here touches your real records.
-            </p>
-            <p className="mt-4 text-sm text-slate">
-              Change a customer's payment delay, add a large purchase, or model financing, and PULSE recomputes a
-              full 90-day forecast against the exact same engine that powers your dashboard. Compare the baseline
-              and simulated outcome side by side: lowest cash point, runway, and days below zero.
-            </p>
-            <ul className="mt-5 space-y-2 text-sm text-ink">
-              {['Customer & supplier payment delay', 'Revenue and expense shocks', 'One-time purchases or financing', 'Ranked rescue strategies, not guesses'].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 shrink-0 text-brand" /> {item}
-                </li>
-              ))}
-            </ul>
+          <div className="problem-grid">
+            <ProblemCard icon={Clock} title="Too late to act" desc="Spreadsheets show what already happened, not what's coming." />
+            <ProblemCard icon={AlertTriangle} title="Hidden risk" desc="A single late-paying customer or one large purchase can quietly tip the balance." />
+            <ProblemCard icon={MessageSquareText} title="No one to ask" desc="Owners need answers grounded in their real numbers, with evidence they can inspect." />
           </div>
-          <Card>
-            <CardContent className="p-6">
-              <TwinChartPreview />
-              <div className="mt-4 flex items-center justify-between text-xs text-slate">
-                <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-slate-300" /> Baseline
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-brand" /> Simulated
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+        </section>
 
-      {/* AI agents */}
-      <section id="agents" className="bg-slate-50 px-6 py-16">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-sm font-medium uppercase tracking-wider text-brand">Multi-agent architecture</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-2xl font-medium text-ink">
-            An orchestrator, not a single giant prompt.
-          </p>
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-4">
-            {AGENTS.map((a) => (
-              <Card key={a.title}>
-                <CardContent className="p-5">
-                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-brand/10">
-                    <Bot className="h-4 w-4 text-brand" />
-                  </div>
-                  <h3 className="mb-1 text-sm font-medium text-ink">{a.title}</h3>
-                  <p className="text-xs text-slate">{a.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
+        <section id="how-it-works" className="story-section workflow-section">
+          <div className="section-heading"><span className="eyebrow">02 / From insight to action</span><h2>Four steps ahead.<br /><span>Always in your hands.</span></h2><p>A continuous loop of understanding, foresight, and better decisions.</p></div>
+          <div className="workflow-grid">
+            <FeatureCard icon={Wallet} title="Understand" desc="Real liquidity, burn rate and risk, calculated from your actual financial data." />
+            <FeatureCard icon={LineChart} title="Anticipate" desc="A 90-day baseline separates known obligations from uncertain everyday flow." />
+            <FeatureCard icon={Sliders} title="Simulate" desc="Stress-test a decision in your Financial Digital Twin before committing." />
+            <FeatureCard icon={ShieldCheck} title="Act, with approval" desc="Review the evidence. Approve the action. Keep a complete audit trail." />
           </div>
+        </section>
 
-          <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6">
-            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-slate">Ask PULSE anything</p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {EXAMPLE_QUESTIONS.map((q) => (
-                <div key={q} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink">
-                  "{q}"
-                </div>
-              ))}
-            </div>
-            <p className="mt-3 text-xs text-slate">
-              Every answer is grounded in the deterministic engine, with or without an LLM key configured.
-            </p>
+        <section id="digital-twin" className="story-section twin-section">
+          <div className="twin-copy"><span className="eyebrow">03 / The Financial Digital Twin</span><h2>One business.<br /><span>More possible futures.</span></h2><p>What if your biggest customer pays late? What if you invest in new inventory? Explore the impact on a full 90-day forecast before you decide.</p>
+            <ul>{['Customer & supplier payment delays', 'Revenue and expense shocks', 'One-time purchases or financing', 'Rescue strategies ranked by outcome'].map(item => <li key={item}><Check size={16} />{item}</li>)}</ul>
+            <div className="sandbox-note"><Lock size={16} /><span>A safe space to experiment.<br /><strong>Your real records stay untouched.</strong></span></div>
           </div>
-        </div>
-      </section>
+          <InteractiveTwin />
+        </section>
 
-      {/* Human-controlled actions */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
-        <h2 className="text-center text-sm font-medium uppercase tracking-wider text-brand">Human-controlled actions</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-2xl font-medium text-ink">
-          Propose → Explain → Review → Approve → Execute → Audit.
-        </p>
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-4">
-          {ACTION_STEPS.map((s, i) => (
-            <div key={s.label} className="relative">
-              <Card>
-                <CardContent className="p-5">
-                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-brand/10">
-                    <s.icon className="h-4 w-4 text-brand" />
-                  </div>
-                  <h3 className="mb-1 text-sm font-medium text-ink">
-                    {i + 1}. {s.label}
-                  </h3>
-                  <p className="text-xs text-slate">{s.desc}</p>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section id="agents" className="story-section agents-section">
+          <div className="section-heading"><span className="eyebrow">04 / Specialist intelligence</span><h2>Four specialists.<br /><span>One clear answer.</span></h2><p>An orchestrator connects your question to the right tools, financial evidence, and safeguards.</p></div>
+          <div className="orchestrator"><div className="orchestrator-core"><Activity size={25} /><span>PULSE orchestrator</span><span className="live-dot" /></div><span className="connection-label">Your question &rarr; the right expertise</span></div>
+          <div className="agent-grid">{AGENTS.map((agent, i) => { const Icon = [Wallet, LineChart, Sliders, ShieldCheck][i]; return <article className="agent-card" key={agent.title}><span className="agent-number">AGENT / 0{i + 1}</span><div className="agent-icon"><Icon size={24} /></div><h3>{agent.title}</h3><p>{agent.desc}</p><span className="agent-capability">{['Analyze the evidence', 'Map the horizon', 'Explore the alternatives', 'Verify the answer'][i]}<ArrowUpRight size={14} /></span></article> })}</div>
+          <CopilotPreview />
+        </section>
 
-      {/* Features */}
-      <section id="features" className="bg-slate-50 px-6 py-16">
-        <div className="mx-auto max-w-7xl grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <Card>
-            <CardContent className="p-6">
-              <Bot className="mb-3 h-6 w-6 text-brand" />
-              <h3 className="mb-1 text-lg font-medium text-ink">AI Copilot, grounded in your data</h3>
-              <p className="text-sm text-slate">
-                Ask about your cash runway, risks, or a what-if scenario. Every figure it states comes from the
-                deterministic engine. Nothing is invented, with or without an LLM configured.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <TrendingUp className="mb-3 h-6 w-6 text-amber" />
-              <h3 className="mb-1 text-lg font-medium text-ink">Honest about uncertainty</h3>
-              <p className="text-sm text-slate">
-                Forecasts distinguish known scheduled commitments from uncertain estimates, and are never
-                presented as guarantees.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+        <section className="story-section approval-section">
+          <div><span className="eyebrow">05 / Human-controlled actions</span><h2>Intelligence on your side.<br /><span>Control in your hands.</span></h2><p>Every consequential action starts as a proposal. You see the evidence and expected impact, then decide what happens next.</p><div className="approval-steps">{ACTION_STEPS.map((step, i) => <div key={step.label}><span>0{i+1}</span><step.icon size={18} /><strong>{step.label}</strong><p>{step.desc}</p></div>)}</div></div>
+          <div className="approval-preview"><div className="preview-top"><span><FileCheck2 size={16} /> Action proposal</span><span className="pending-badge">Awaiting your review</span></div><div className="proposal-body"><span className="eyebrow">Illustrative workflow</span><h3>A gentle nudge.<br />A healthier cash flow.</h3><p>Prepare payment reminders for three overdue invoices.</p><div className="evidence-row"><Check size={16} />Invoice evidence attached</div><div className="evidence-row"><Check size={16} />Draft and recipients ready for review</div><div className="evidence-row"><Lock size={16} />Nothing sent without your approval</div><Link to="/signup" className="proposal-link">Explore the approval workflow <ArrowRight size={16} /></Link></div><div className="audit-strip"><ShieldCheck size={15} />Propose &rarr; Explain &rarr; Review &rarr; Approve &rarr; Execute &rarr; Audit</div></div>
+        </section>
 
-      {/* Security */}
-      <section id="security" className="mx-auto max-w-7xl px-6 py-16">
-        <h2 className="mb-6 text-center text-2xl font-semibold text-ink">Security &amp; transparency</h2>
-        <p className="mx-auto max-w-2xl text-center text-slate">
-          Pulse AI is decision support, not a regulated financial adviser, and never moves real money.
-        </p>
-        <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-          <SecurityItem icon={Lock} label="Tenant-isolated data, bcrypt-hashed passwords" />
-          <SecurityItem icon={ShieldCheck} label="Server-side authorization on every endpoint" />
-          <SecurityItem icon={FileCheck2} label="Full audit trail on every approved action" />
-        </div>
-      </section>
+        <section id="features" className="story-section confidence-section"><article><Bot size={25} /><h3>Grounded. Every time.</h3><p>Every figure comes from the deterministic financial engine. Your copilot explains the numbers, with or without an LLM configured.</p></article><article><TrendingUp size={25} /><h3>Clarity includes uncertainty.</h3><p>Known commitments and estimated flows stay distinct. Forecasts support your judgment and are never presented as guarantees.</p><div className="confidence-key"><span>Solid: known commitments</span><span>Dashed: estimated flow</span></div></article></section>
 
-      <section className="mx-auto max-w-4xl px-6 py-20 text-center">
-        <h2 className="text-3xl font-semibold text-ink">Ready to see your business's future?</h2>
-        <div className="mt-6">
-          <Link to="/signup">
-            <Button>
-              Start your financial journey <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-      </section>
+        <section id="security" className="story-section security-section"><div className="security-title"><div className="security-emblem"><ShieldCheck size={32} /></div><span className="eyebrow">Built on trust</span><h2>Your numbers.<br />Your business.</h2><p>PULSE is decision support, not a regulated financial adviser, and never moves real money.</p></div><div className="security-list"><SecurityItem icon={Lock} label="Tenant-isolated data & bcrypt-hashed passwords" /><SecurityItem icon={ShieldCheck} label="Server-side authorization on every endpoint" /><SecurityItem icon={FileCheck2} label="Full audit trail on every approved action" /></div></section>
+
+        <section className="story-section closing-section"><div className="closing-orbit" aria-hidden="true"><Activity /></div><span className="eyebrow">A little foresight changes everything</span><h2>Meet your business's<br /><span>next chapter.</span></h2><p>Understand today. Explore tomorrow. Decide with confidence.</p><Link to="/signup" className="closing-button">Start your financial journey <ArrowUpRight size={19} /></Link><span className="closing-footnote">Real numbers. Clearer decisions. You're in control.</span></section>
+      </main>
 
       <footer className="bg-slate-900 px-6 pb-8 pt-14 text-slate-300">
         <div className="mx-auto max-w-7xl">
@@ -503,12 +410,17 @@ function FeatureCard({ icon: Icon, title, desc }: { icon: typeof Wallet; title: 
 const TWIN_BASELINE = [40, 32, 20, 8, -5, -15, -20, -12, 0, 15, 28, 38, 45, 50]
 const TWIN_SIMULATED = [40, 35, 28, 22, 18, 15, 18, 25, 35, 45, 52, 58, 62, 65]
 
-function TwinChartPreview() {
+function scenarioValues(scenario: number) {
+  return TWIN_SIMULATED.map((v, i) => v - (scenario === 1 ? Math.sin(i / 13 * Math.PI) * 40 : scenario === 2 ? (i > 2 ? 25 : 0) : 0))
+}
+
+function TwinChartPreview({ scenario = 0 }: { scenario?: number }) {
+  const simulated = scenarioValues(scenario)
   const width = 300
   const height = 130
   const padY = 10
-  const min = Math.min(...TWIN_BASELINE, ...TWIN_SIMULATED)
-  const max = Math.max(...TWIN_BASELINE, ...TWIN_SIMULATED)
+  const min = Math.min(...TWIN_BASELINE, ...simulated)
+  const max = Math.max(...TWIN_BASELINE, ...simulated)
   const range = max - min || 1
 
   const toXY = (value: number, i: number, count: number) => {
@@ -520,7 +432,7 @@ function TwinChartPreview() {
   const toPath = (values: number[]) =>
     values.map((v, i) => toXY(v, i, values.length)).map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
 
-  const simulatedPath = toPath(TWIN_SIMULATED)
+  const simulatedPath = toPath(simulated)
   const baselinePath = toPath(TWIN_BASELINE)
   const [lastX] = toXY(0, TWIN_SIMULATED.length - 1, TWIN_SIMULATED.length)
   const [firstX] = toXY(0, 0, TWIN_SIMULATED.length)
@@ -528,7 +440,7 @@ function TwinChartPreview() {
   const [, zeroY] = toXY(0, 0, TWIN_SIMULATED.length)
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-40 w-full" preserveAspectRatio="none">
+    <svg role="img" aria-label="Illustrative 90-day baseline and scenario cash forecast" viewBox={`0 0 ${width} ${height}`} className="h-40 w-full" preserveAspectRatio="none">
       <defs>
         <linearGradient id="twin-fill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.18" />
@@ -550,4 +462,18 @@ function SecurityItem({ icon: Icon, label }: { icon: typeof Lock; label: string 
       <p className="text-xs text-ink">{label}</p>
     </div>
   )
+}
+
+function InteractiveTwin() {
+  const [scenario, setScenario] = useState(0)
+  const values = scenarioValues(scenario)
+  const lowestCash = Math.min(...values) * (4735 / 15)
+  const daysBelow = Math.round(values.filter(value => value < 0).length / values.length * 90)
+  return <div className="twin-console"><div className="preview-top"><span><Activity size={17} /> Scenario studio</span><span className="demo-badge">Interactive illustration</span></div><div className="console-body"><div className="scenario-heading"><span>EXPLORE A WHAT-IF</span><span>90-day horizon</span></div><div className="scenario-tabs" role="group" aria-label="Illustrative scenarios">{['Extend supplier terms', 'Customer pays late', 'Buy inventory'].map((label, i) => <button key={label} type="button" aria-pressed={scenario === i} onClick={() => setScenario(i)}>{label}</button>)}</div><div className="scenario-detail"><Sliders size={16} /><span>{['Supplier payment delayed by 15 days', 'Customer payment delayed by 15 days', 'One-time inventory purchase'][scenario]}</span></div><div className="chart-legend"><span><i />Baseline</span><span><i />Simulated</span></div><div className="twin-chart"><TwinChartPreview scenario={scenario} /></div><div className="chart-axis"><span>Today</span><span>Day 30</span><span>Day 60</span><span>Day 90</span></div><div className="scenario-metrics" aria-live="polite"><div><span>Lowest cash point</span><strong>{new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, signDisplay: 'always' }).format(lowestCash)}</strong></div><div><span>Days below zero</span><strong>{daysBelow} <small>days</small></strong></div><div><span>Horizon covered</span><strong>90 <small>days</small></strong></div></div></div><p className="console-disclaimer">Illustrative data only. Your dashboard uses the real financial engine.</p></div>
+}
+
+function CopilotPreview() {
+  const [question, setQuestion] = useState(0)
+  const responses = ['PULSE checks your cash position against scheduled payroll and other obligations, then highlights projected gaps and the assumptions behind them.', 'The Digital Twin shifts the payment date and compares the resulting forecast with your baseline, including the lowest cash point and days below zero.', 'PULSE models the purchase against your baseline so you can review its effect on liquidity before making a commitment.', 'PULSE prepares a draft with invoice evidence and recipients for your review. Sending requires your explicit approval.']
+  return <div className="copilot-preview"><div className="copilot-intro"><span className="eyebrow">A conversation with your numbers</span><h3>Ask the question<br />on your mind.</h3><p>Choose an example to explore how PULSE approaches it.</p><div className="grounded-badge"><ShieldCheck size={15} /> Engine-grounded answers</div></div><div className="copilot-conversation"><div className="question-options">{EXAMPLE_QUESTIONS.map((q, i) => <button type="button" aria-pressed={question === i} onClick={() => setQuestion(i)} key={q}>{q}<ArrowUpRight size={15} /></button>)}</div><div className="copilot-answer" aria-live="polite"><div className="answer-avatar"><Activity size={18} /></div><div><strong>How PULSE answers</strong><p>{responses[question]}</p><span>Workflow preview / no live financial data</span></div></div></div></div>
 }

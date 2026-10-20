@@ -12,6 +12,16 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (axios.isAxiosError(error) && error.response?.status === 403 && error.response.data?.detail === 'Account approval required') {
+      window.dispatchEvent(new Event('pulse-account-status-changed'))
+    }
+    return Promise.reject(error)
+  },
+)
+
 export function setAuthToken(token: string | null) {
   if (token) {
     localStorage.setItem('pulse_token', token)

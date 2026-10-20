@@ -1,16 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Logo } from '../components/Logo'
 import { useAuth } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
 
 export function Login() {
-  const { login } = useAuth()
+  const { login, me } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('owner@northstarstudio.demo')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    if (me) navigate(me.user.account_status !== 'APPROVED' ? '/account-status' : me.user.is_admin ? '/admin' : '/dashboard', { replace: true })
+  }, [me, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -18,7 +21,6 @@ export function Login() {
     setLoading(true)
     try {
       await login(email, password)
-      navigate('/dashboard')
     } catch {
       setError('Invalid email or password.')
     } finally {

@@ -85,6 +85,12 @@ def register_and_login(client, email: str, password: str = "StrongPass123", org_
     )
     assert resp.status_code == 201, resp.text
     token = resp.json()["access_token"]
+    # Business tests exercise approved accounts; pending access is tested in test_admin.
+    from app.models.user import User
+    with TestSessionLocal() as session:
+        user = session.query(User).filter(User.email == email.lower()).one()
+        user.account_status = "APPROVED"
+        session.commit()
     headers = {"Authorization": f"Bearer {token}"}
     me = client.get("/auth/me", headers=headers).json()
     org_id = me["memberships"][0]["organization_id"]

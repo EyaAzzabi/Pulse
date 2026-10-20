@@ -34,6 +34,9 @@ class UserOut(BaseModel):
     preferred_language: str
     default_currency: str
     timezone: str
+    is_admin: bool
+    account_status: str
+    review_reason: str
 
     class Config:
         from_attributes = True

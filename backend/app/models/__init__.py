@@ -5,8 +5,10 @@ from app.models.forecast import ForecastPoint, ForecastRun
 from app.models.simulation import ActionProposal, Recommendation, SimulationResult, SimulationScenario
 from app.models.conversation import AuditLog, ChatMessage, Conversation, Notification
 from app.models.otp import EmailOtp
+from app.models.admin import AccountReview
 
 __all__ = [
+    "AccountReview",
     "User",
     "Membership",
     "Organization",

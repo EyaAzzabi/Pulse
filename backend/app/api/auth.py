@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import get_authenticated_user
 from app.core.security import create_access_token, hash_password, verify_password
 from app.db.session import get_db
 from app.models.organization import BusinessProfile, OnboardingProgress, Organization
@@ -46,7 +46,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     except OtpError as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc))
 
-    user = User(email=email, password_hash=hash_password(payload.password), full_name=payload.full_name)
+    user = User(email=email, password_hash=hash_password(payload.password), full_name=payload.full_name, account_status="PENDING", email_verified=True)
     db.add(user)
     db.flush()
 
@@ -66,14 +66,14 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email.lower()).first()
-    if not user or not verify_password(payload.password, user.password_hash):
+    if not user or not user.is_active or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
     token = create_access_token(user.id)
     return TokenResponse(access_token=token)
 
 
 @router.get("/me", response_model=MeResponse)
-def me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def me(user: User = Depends(get_authenticated_user), db: Session = Depends(get_db)):
     memberships = db.query(Membership).filter(Membership.user_id == user.id).all()
     out = []
     for m in memberships:

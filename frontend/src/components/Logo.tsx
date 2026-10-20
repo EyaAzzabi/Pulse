@@ -11,14 +11,14 @@ export function Logo({ size = 32, withWordmark = false, wordmarkClassName, class
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <div
-        className="flex shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-slate-200"
+        className="relative flex shrink-0 items-center justify-center rounded-2xl bg-white p-1 shadow-[0_8px_24px_rgba(29,78,216,0.22)] ring-1 ring-blue-200/70"
         style={{ width: size, height: size }}
       >
         <img src="/logo-icon.png" alt="Pulse AI" className="h-full w-full object-contain" />
       </div>
       {withWordmark && (
-        <span className={cn('font-display text-lg font-semibold tracking-tight text-ink', wordmarkClassName)}>
-          Pulse <span className="text-brand">AI</span>
+        <span className={cn('font-display text-lg font-bold tracking-[-0.04em] text-ink', wordmarkClassName)}>
+          PULSE <span className="text-blue-400">AI</span>
         </span>
       )}
     </div>

@@ -5,6 +5,9 @@ export interface UserOut {
   preferred_language: string
   default_currency: string
   timezone: string
+  is_admin: boolean
+  account_status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED'
+  review_reason: string
 }
 
 export interface MembershipOut {

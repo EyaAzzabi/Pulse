@@ -51,6 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    const updateStatus = () => { void refreshMe() }
+    window.addEventListener('pulse-account-status-changed', updateStatus)
+    return () => window.removeEventListener('pulse-account-status-changed', updateStatus)
+  })
+
   function setCurrentOrgId(organizationId: string) {
     localStorage.setItem(CURRENT_ORG_KEY, organizationId)
     setCurrentOrgIdState(organizationId)
