@@ -1,0 +1,49 @@
+{
+  "name": "Pulse AI - Approved Recovery Plan",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pulse/recovery-plan-approved",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Recovery Plan Approved",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.PULSE_API_BASE_URL}}/actions/{{$json.details.action_id}}/execute?organization_id={{$json.details.organization_id}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "confirm-execute",
+      "name": "Confirm Execution With Pulse",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "credentials": { "httpHeaderAuth": { "id": "PULSE_API_TOKEN", "name": "Pulse API Bearer Token" } }
+    },
+    {
+      "parameters": {},
+      "id": "noop-log",
+      "name": "Execution Recorded",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Recovery Plan Approved": { "main": [[{ "node": "Confirm Execution With Pulse", "type": "main", "index": 0 }]] },
+    "Confirm Execution With Pulse": { "main": [[{ "node": "Execution Recorded", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "triggerCount": 1,
+  "_pulse_notes": "Pulse's own /actions/{id}/execute endpoint already re-validates organization membership, approval status and idempotency server-side before running anything (see app/api/actions.py). This workflow is an optional external trigger point (e.g. a Slack approval button) that calls back into that same guarded endpoint rather than re-implementing authorization in n8n."
+}

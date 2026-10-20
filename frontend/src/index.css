@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Poppins", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* App theme (light), built around the Pulse AI mark: a royal-blue ring
+     with a silver/gray heartbeat-to-growth-arrow. "midnight" is the page
+     background and "navy" is kept only as a historical alias — components
+     use bg-white directly now. */
+  --color-midnight: #f5f7fb;
+  --color-navy: #ffffff;
+  --color-ink: #0f172a;
+  --color-slate: #64748b;
+  --color-brand: #1d4ed8;
+  --color-brand-dark: #1e3a8a;
+  --color-amber: #d97706;
+  --color-risk: #dc2626;
+  --color-success: #059669;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--color-midnight);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-brand) 25%, transparent);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate) transparent;
+}

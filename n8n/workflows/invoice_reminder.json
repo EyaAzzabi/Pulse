@@ -1,0 +1,52 @@
+{
+  "name": "Pulse AI - Invoice Reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pulse/invoice-reminder",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Invoice Reminder",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "details.drafts",
+        "options": {}
+      },
+      "id": "split-drafts",
+      "name": "Split Out Drafts",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "billing@pulse.ai",
+        "toEmail": "={{$json.to}}",
+        "subject": "={{$json.subject}}",
+        "text": "={{$json.body}}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "credentials": { "smtp": { "id": "SMTP_CREDENTIAL_ID", "name": "Pulse SMTP" } }
+    }
+  ],
+  "connections": {
+    "Webhook: Invoice Reminder": { "main": [[{ "node": "Split Out Drafts", "type": "main", "index": 0 }]] },
+    "Split Out Drafts": { "main": [[{ "node": "Send Reminder Email", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "triggerCount": 1,
+  "_pulse_notes": "Triggered by POST /actions/{id}/execute after a user approves a 'send_invoice_reminder' action proposal. The action's details.drafts array (one entry per invoice: to/subject/body) is split and emailed individually. Pulse only marks the action SENT if this workflow (or the configured webhook) responds successfully — see app/services/workflows.py."
+}

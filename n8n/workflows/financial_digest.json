@@ -1,0 +1,53 @@
+{
+  "name": "Pulse AI - Financial Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "days", "daysInterval": 1, "triggerAtHour": 8 }] }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$env.PULSE_API_BASE_URL}}/financial/summary?organization_id={{$env.PULSE_ORGANIZATION_ID}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "fetch-summary",
+      "name": "Fetch Financial Summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "credentials": { "httpHeaderAuth": { "id": "PULSE_API_TOKEN", "name": "Pulse API Bearer Token" } }
+    },
+    {
+      "parameters": {
+        "fromEmail": "digest@pulse.ai",
+        "toEmail": "={{$env.DIGEST_RECIPIENTS}}",
+        "subject": "Pulse AI daily digest — risk level {{$json.risk_level}}",
+        "text": "Cash: {{$json.currency}} {{$json.current_cash}}\nNet cash flow (30d): {{$json.currency}} {{$json.net_cash_flow_30d}}\nRunway: {{$json.cash_runway_days}} days\nOverdue receivables: {{$json.currency}} {{$json.overdue_receivables_amount}}\nRisk: {{$json.risk_level}} — {{$json.risk_reasons.join(' ')}}",
+        "options": {}
+      },
+      "id": "send-digest",
+      "name": "Send Digest Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "credentials": { "smtp": { "id": "SMTP_CREDENTIAL_ID", "name": "Pulse SMTP" } }
+    }
+  ],
+  "connections": {
+    "Daily 08:00": { "main": [[{ "node": "Fetch Financial Summary", "type": "main", "index": 0 }]] },
+    "Fetch Financial Summary": { "main": [[{ "node": "Send Digest Email", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "triggerCount": 1,
+  "_pulse_notes": "Pulls the live /financial/summary endpoint (real numbers, not invented) and emails opted-in users. Requires PULSE_API_BASE_URL, PULSE_ORGANIZATION_ID and DIGEST_RECIPIENTS as n8n environment variables, plus a bearer token credential for a service account."
+}
