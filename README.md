@@ -16,7 +16,7 @@ It predicts the next shortfall, simulates rescue strategies in a Financial Digit
 <br/>
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?logo=supabase&logoColor=white)
 ![n8n](https://img.shields.io/badge/n8n-automations-EA4B71?logo=n8n&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-87%20passed-14B8A6)
+![Tests](https://img.shields.io/badge/tests-passing-14B8A6)
 ![Human in the loop](https://img.shields.io/badge/actions-human%20approval-0B1F3A)
 
 [Why](#why-pulse-ai) · [Product](#the-product) · [Architecture](#architecture) · [Install and test](#installation-and-testing-guide) · [Responsible AI](#responsible-ai)
@@ -253,7 +253,7 @@ In terminal 1, with the virtual environment active:
 python -m pytest -q
 ```
 
-Expected result: `87 passed`. The tests use their own temporary SQLite database and do not touch your data. They cover authentication and email codes, tenant isolation, roles, onboarding, imports, the financial engine, forecast and simulation, rescue plans, agent tool permissions, the approval workflow, notifications and administration.
+Expected result: every test passes (`passed`, no failures). The tests use their own temporary SQLite database and do not touch your data. They cover authentication and email codes, tenant isolation, roles, onboarding, imports, the financial engine, forecast and simulation, rescue plans, agent tool permissions, the approval workflow, notifications and administration.
 
 To check the frontend build: `cd frontend && npm run build`.
 

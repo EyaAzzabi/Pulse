@@ -147,7 +147,7 @@ export function Landing() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-5 py-4">
                   <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-blue-300">Northstar Studio · demo</p>
+                    <p className="text-xs font-medium uppercase tracking-wider text-blue-300">Northstar Studio</p>
                     <p className="text-sm font-medium text-white">90-day cash-flow risk detected</p>
                   </div>
                   <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs text-slate-200">
@@ -155,13 +155,12 @@ export function Landing() {
                   </span>
                 </div>
                 <div className="px-5 py-4 text-sm leading-relaxed text-slate-200">
-                  PULSE detected a potential cash dip around day 18, driven by a scheduled inventory payment
-                  landing before three customer invoices are due. Extending supplier terms by 15 days removes
-                  the shortfall entirely in simulation.
+                  PULSE projects cash going below zero on November 7, with three customer invoices already
+                  overdue. Extending supplier terms by 15 days removes the shortfall entirely in simulation.
                 </div>
                 <div className="grid grid-cols-2 gap-px bg-white/10">
-                  <MiniStat label="Current cash" value="€22,520" />
-                  <MiniStat label="Lowest projected" value="−€3,128" tone="risk" />
+                  <MiniStat label="Current cash" value="€7,020" />
+                  <MiniStat label="Lowest projected" value="−€2,308" tone="risk" />
                 </div>
               </motion.div>
 
@@ -197,7 +196,7 @@ export function Landing() {
                   <span className="text-[11px] font-semibold uppercase tracking-wide">Rescue simulated</span>
                 </div>
                 <p className="mt-1 text-xs text-slate-600">
-                  Extend supplier terms 15d → <span className="font-medium text-brand">+€4,735</span> lowest
+                  Extend supplier terms 15d → <span className="font-medium text-brand">+€4,372</span> lowest
                   point
                 </p>
               </motion.div>
