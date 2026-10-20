@@ -1,0 +1,24 @@
+Real browser video source, encoded without fabricated frames.
+55.28 bitrate= 163.7kbits/s speed=17.2x    
+frame= 3132 fps=434 q=28.0 size=    2304KiB time=00:02:05.20 bitrate= 150.8kbits/s speed=17.4x    
+[mp4 @ 000001c36fef7a00] Starting second pass: moving the moov atom to the beginning of the file
+[out#0/mp4 @ 000001c36fef7900] video:2417KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.617227%
+frame= 3272 fps=438 q=-1.0 Lsize=    2456KiB time=00:02:10.80 bitrate= 153.8kbits/s speed=17.5x    
+[libx264 @ 000001c36fee6540] frame I:31    Avg QP: 8.22  size: 27241
+[libx264 @ 000001c36fee6540] frame P:831   Avg QP:15.24  size:  1207
+[libx264 @ 000001c36fee6540] frame B:2410  Avg QP:13.70  size:   260
+[libx264 @ 000001c36fee6540] consecutive B-frames:  1.4%  0.9%  1.0% 96.7%
+[libx264 @ 000001c36fee6540] mb I  I16..4: 84.4%  9.2%  6.4%
+[libx264 @ 000001c36fee6540] mb P  I16..4:  2.9%  1.6%  0.1%  P16..4:  2.6%  0.1%  0.1%  0.0%  0.0%    skip:92.6%
+[libx264 @ 000001c36fee6540] mb B  I16..4:  0.4%  0.1%  0.0%  B16..8:  0.3%  0.0%  0.0%  direct: 2.9%  skip:96.3%  L0:41.6% L1:57.1% BI: 1.3%
+[libx264 @ 000001c36fee6540] 8x8 transform intra:21.8% inter:39.4%
+[libx264 @ 000001c36fee6540] coded y,uvDC,uvAC intra: 3.9% 6.7% 4.7% inter: 0.1% 2.6% 0.1%
+[libx264 @ 000001c36fee6540] i16 v,h,dc,p: 81% 16%  3%  0%
+[libx264 @ 000001c36fee6540] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 28% 18% 52%  0%  0%  0%  0%  0%  1%
+[libx264 @ 000001c36fee6540] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 30% 29% 21%  2%  3%  3%  4%  2%  6%
+[libx264 @ 000001c36fee6540] i8c dc,h,v,p: 79% 14%  6%  0%
+[libx264 @ 000001c36fee6540] Weighted P-Frames: Y:1.6% UV:1.2%
+[libx264 @ 000001c36fee6540] ref P L0: 54.6% 45.4%
+[libx264 @ 000001c36fee6540] ref B L0: 77.6% 22.4%
+[libx264 @ 000001c36fee6540] ref B L1: 95.7%  4.3%
+[libx264 @ 000001c36fee6540] kb/s:151.27

@@ -1,0 +1,1334 @@
+{
+  "as_of": "2026-10-20",
+  "summary": {
+    "as_of": "2026-10-20",
+    "currency": "EUR",
+    "current_cash": "7020.00",
+    "trailing_30d_inflow": "14600.00",
+    "trailing_30d_outflow": "11680.00",
+    "net_cash_flow_30d": "2920.00",
+    "monthly_burn_rate": "0.00",
+    "cash_runway_days": null,
+    "outstanding_receivables": "21150.00",
+    "outstanding_payables": "10700.00",
+    "overdue_receivables_count": 3,
+    "overdue_receivables_amount": "7150.00",
+    "overdue_payables_count": 0,
+    "overdue_payables_amount": "0.00",
+    "upcoming_obligations_30d": "21150.00",
+    "largest_customer_share_pct": "57.68",
+    "expense_trend_pct": "-33.94",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "7150.00 in overdue receivables not yet collected.",
+      "57.68% of receivables depend on a single customer."
+    ]
+  },
+  "baseline_lowest": "-2308.00",
+  "baseline_days_below_zero": 7,
+  "baseline_runway": 18,
+  "shortfall_date": "2026-11-07",
+  "rescue_lowest": "2064.00",
+  "rescue_days_below_zero": 0,
+  "purchase_lowest": "-10308.00",
+  "rescue_plans": [
+    {
+      "key": "accelerate_collections",
+      "title": "Collect overdue invoices",
+      "rationale": "Send reminders on every overdue customer invoice and assume they are paid within 7 days. Future invoices are also chased 10 days earlier.",
+      "expected_impact": "7150.00",
+      "feasibility": "medium",
+      "cost": "low",
+      "residual_risk": "low",
+      "requires_approval": true
+    },
+    {
+      "key": "short_term_credit",
+      "title": "Bridge with a short-term credit line",
+      "rationale": "Draw 5,000 from a credit line repaid at about 440 per month. Illustrative terms only, not a lender offer.",
+      "expected_impact": "4560.00",
+      "feasibility": "medium",
+      "cost": "high",
+      "residual_risk": "low",
+      "requires_approval": true
+    },
+    {
+      "key": "extend_supplier_terms",
+      "title": "Negotiate supplier payment extensions",
+      "rationale": "Ask suppliers for 15 more days on upcoming bills to keep cash in the business longer.",
+      "expected_impact": "4372.00",
+      "feasibility": "medium",
+      "cost": "low",
+      "residual_risk": "low",
+      "requires_approval": true
+    }
+  ],
+  "forecast_points": [
+    {
+      "date": "2026-10-21",
+      "projected_cash": "6949.00",
+      "known_component": "-450.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-22",
+      "projected_cash": "7328.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-23",
+      "projected_cash": "7707.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-24",
+      "projected_cash": "8086.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-25",
+      "projected_cash": "6465.00",
+      "known_component": "-2000.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-26",
+      "projected_cash": "6844.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-27",
+      "projected_cash": "7223.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-28",
+      "projected_cash": "10202.00",
+      "known_component": "2600.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-29",
+      "projected_cash": "10581.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-30",
+      "projected_cash": "2960.00",
+      "known_component": "-8000.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-31",
+      "projected_cash": "3339.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-01",
+      "projected_cash": "2518.00",
+      "known_component": "-1200.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-02",
+      "projected_cash": "2897.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-03",
+      "projected_cash": "3276.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-04",
+      "projected_cash": "6055.00",
+      "known_component": "2400.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-05",
+      "projected_cash": "6434.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-06",
+      "projected_cash": "6813.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-07",
+      "projected_cash": "-2308.00",
+      "known_component": "-9500.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-08",
+      "projected_cash": "-1929.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-09",
+      "projected_cash": "-1550.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-10",
+      "projected_cash": "-1171.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-11",
+      "projected_cash": "-792.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-12",
+      "projected_cash": "-413.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-13",
+      "projected_cash": "-34.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-14",
+      "projected_cash": "345.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-15",
+      "projected_cash": "724.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-16",
+      "projected_cash": "1103.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-17",
+      "projected_cash": "1482.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-18",
+      "projected_cash": "1861.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-19",
+      "projected_cash": "2240.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-20",
+      "projected_cash": "2619.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-21",
+      "projected_cash": "2548.00",
+      "known_component": "-450.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-22",
+      "projected_cash": "2927.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-23",
+      "projected_cash": "3306.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-24",
+      "projected_cash": "3685.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-25",
+      "projected_cash": "2064.00",
+      "known_component": "-2000.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-26",
+      "projected_cash": "2443.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-27",
+      "projected_cash": "2822.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-28",
+      "projected_cash": "3201.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-29",
+      "projected_cash": "12580.00",
+      "known_component": "9000.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-30",
+      "projected_cash": "4959.00",
+      "known_component": "-8000.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-01",
+      "projected_cash": "5338.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-02",
+      "projected_cash": "5717.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-03",
+      "projected_cash": "6096.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-04",
+      "projected_cash": "6475.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-05",
+      "projected_cash": "6854.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-06",
+      "projected_cash": "7233.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-07",
+      "projected_cash": "7612.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-08",
+      "projected_cash": "7991.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-09",
+      "projected_cash": "8370.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-10",
+      "projected_cash": "8749.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-11",
+      "projected_cash": "9128.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-12",
+      "projected_cash": "9507.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-13",
+      "projected_cash": "9886.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-14",
+      "projected_cash": "10265.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-15",
+      "projected_cash": "10644.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-16",
+      "projected_cash": "11023.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-17",
+      "projected_cash": "11402.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-18",
+      "projected_cash": "11781.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-19",
+      "projected_cash": "12160.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-20",
+      "projected_cash": "12539.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-21",
+      "projected_cash": "12468.00",
+      "known_component": "-450.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-22",
+      "projected_cash": "12847.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-23",
+      "projected_cash": "13226.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-24",
+      "projected_cash": "13605.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-25",
+      "projected_cash": "11984.00",
+      "known_component": "-2000.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-26",
+      "projected_cash": "12363.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-27",
+      "projected_cash": "12742.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-28",
+      "projected_cash": "13121.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-29",
+      "projected_cash": "13500.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-30",
+      "projected_cash": "5879.00",
+      "known_component": "-8000.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-31",
+      "projected_cash": "6258.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-01",
+      "projected_cash": "6637.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-02",
+      "projected_cash": "7016.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-03",
+      "projected_cash": "7395.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-04",
+      "projected_cash": "7774.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-05",
+      "projected_cash": "8153.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-06",
+      "projected_cash": "8532.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-07",
+      "projected_cash": "8911.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-08",
+      "projected_cash": "9290.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-09",
+      "projected_cash": "9669.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-10",
+      "projected_cash": "10048.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-11",
+      "projected_cash": "10427.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-12",
+      "projected_cash": "10806.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-13",
+      "projected_cash": "11185.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-14",
+      "projected_cash": "11564.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-15",
+      "projected_cash": "11943.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-16",
+      "projected_cash": "12322.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-17",
+      "projected_cash": "12701.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-18",
+      "projected_cash": "13080.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    }
+  ],
+  "rescue_points": [
+    {
+      "date": "2026-10-21",
+      "projected_cash": "6949.00",
+      "known_component": "-450.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-22",
+      "projected_cash": "7328.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-23",
+      "projected_cash": "7707.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-24",
+      "projected_cash": "8086.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-25",
+      "projected_cash": "6465.00",
+      "known_component": "-2000.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-26",
+      "projected_cash": "6844.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-27",
+      "projected_cash": "7223.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-28",
+      "projected_cash": "10202.00",
+      "known_component": "2600.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-29",
+      "projected_cash": "10581.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-30",
+      "projected_cash": "2960.00",
+      "known_component": "-8000.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-10-31",
+      "projected_cash": "3339.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-01",
+      "projected_cash": "3718.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-02",
+      "projected_cash": "4097.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-03",
+      "projected_cash": "4476.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "high"
+    },
+    {
+      "date": "2026-11-04",
+      "projected_cash": "7255.00",
+      "known_component": "2400.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-05",
+      "projected_cash": "7634.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-06",
+      "projected_cash": "8013.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-07",
+      "projected_cash": "8392.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-08",
+      "projected_cash": "8771.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-09",
+      "projected_cash": "9150.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-10",
+      "projected_cash": "9529.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-11",
+      "projected_cash": "9908.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-12",
+      "projected_cash": "10287.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-13",
+      "projected_cash": "10666.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-14",
+      "projected_cash": "11045.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-15",
+      "projected_cash": "11424.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-16",
+      "projected_cash": "10603.00",
+      "known_component": "-1200.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-17",
+      "projected_cash": "10982.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-18",
+      "projected_cash": "11361.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-19",
+      "projected_cash": "11740.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-20",
+      "projected_cash": "12119.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-21",
+      "projected_cash": "12048.00",
+      "known_component": "-450.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-22",
+      "projected_cash": "2927.00",
+      "known_component": "-9500.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-23",
+      "projected_cash": "3306.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-24",
+      "projected_cash": "3685.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-25",
+      "projected_cash": "2064.00",
+      "known_component": "-2000.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-26",
+      "projected_cash": "2443.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-27",
+      "projected_cash": "2822.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-28",
+      "projected_cash": "3201.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-29",
+      "projected_cash": "12580.00",
+      "known_component": "9000.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-11-30",
+      "projected_cash": "4959.00",
+      "known_component": "-8000.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-01",
+      "projected_cash": "5338.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-02",
+      "projected_cash": "5717.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-03",
+      "projected_cash": "6096.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-04",
+      "projected_cash": "6475.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "medium"
+    },
+    {
+      "date": "2026-12-05",
+      "projected_cash": "6854.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-06",
+      "projected_cash": "7233.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-07",
+      "projected_cash": "7612.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-08",
+      "projected_cash": "7991.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-09",
+      "projected_cash": "8370.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-10",
+      "projected_cash": "8749.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-11",
+      "projected_cash": "9128.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-12",
+      "projected_cash": "9507.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-13",
+      "projected_cash": "9886.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-14",
+      "projected_cash": "10265.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-15",
+      "projected_cash": "10644.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-16",
+      "projected_cash": "11023.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-17",
+      "projected_cash": "11402.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-18",
+      "projected_cash": "11781.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-19",
+      "projected_cash": "12160.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-20",
+      "projected_cash": "12539.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-21",
+      "projected_cash": "12468.00",
+      "known_component": "-450.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-22",
+      "projected_cash": "12847.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-23",
+      "projected_cash": "13226.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-24",
+      "projected_cash": "13605.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-25",
+      "projected_cash": "11984.00",
+      "known_component": "-2000.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-26",
+      "projected_cash": "12363.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-27",
+      "projected_cash": "12742.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-28",
+      "projected_cash": "13121.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-29",
+      "projected_cash": "13500.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-30",
+      "projected_cash": "5879.00",
+      "known_component": "-8000.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2026-12-31",
+      "projected_cash": "6258.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-01",
+      "projected_cash": "6637.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-02",
+      "projected_cash": "7016.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-03",
+      "projected_cash": "7395.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-04",
+      "projected_cash": "7774.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-05",
+      "projected_cash": "8153.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-06",
+      "projected_cash": "8532.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-07",
+      "projected_cash": "8911.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-08",
+      "projected_cash": "9290.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-09",
+      "projected_cash": "9669.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-10",
+      "projected_cash": "10048.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-11",
+      "projected_cash": "10427.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-12",
+      "projected_cash": "10806.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-13",
+      "projected_cash": "11185.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-14",
+      "projected_cash": "11564.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-15",
+      "projected_cash": "11943.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-16",
+      "projected_cash": "12322.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-17",
+      "projected_cash": "12701.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    },
+    {
+      "date": "2027-01-18",
+      "projected_cash": "13080.00",
+      "known_component": "0.00",
+      "uncertain_component": "379.00",
+      "confidence": "low"
+    }
+  ],
+  "copilot_mode": "deterministic",
+  "browser_errors": [],
+  "invoice_records_unchanged": true,
+  "action_result": "QUEUED: no external delivery configured in submission demo"
+}

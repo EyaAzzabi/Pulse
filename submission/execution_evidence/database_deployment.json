@@ -1,0 +1,7 @@
+{
+  "configured_dialect": "sqlite",
+  "supabase_hostname": false,
+  "production_architecture": "Supabase PostgreSQL (team-selected shared database)",
+  "submission_evidence_database": "isolated synthetic SQLite database",
+  "read_only_connectivity_check": "Current local configuration still uses SQLite; shared Supabase connection not verified in this session."
+}

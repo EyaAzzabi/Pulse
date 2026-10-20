@@ -1,0 +1,25 @@
+{
+  "pdf_pages": {
+    "PULSE_Presentation.pdf": 10,
+    "PULSE_Security_Self_Assessment.pdf": 11,
+    "PULSE_Technical_Documentation.pdf": 14
+  },
+  "screenshots": [
+    "01_landing.png",
+    "02_authentication.png",
+    "03_business_onboarding.png",
+    "04_financial_dashboard.png",
+    "05_cashflow_forecast.png",
+    "06_liquidity_risk_alert.png",
+    "07_ai_copilot.png",
+    "08_digital_twin_simulator.png",
+    "09_scenario_comparison.png",
+    "10_human_approval.png",
+    "11_execution_history.png",
+    "12_n8n_workflow.png"
+  ],
+  "source_files": 172,
+  "presentation_slides": 10,
+  "private_configuration_value_scan": "PASS",
+  "source_excludes_private_state": true
+}

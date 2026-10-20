@@ -1,0 +1,8 @@
+{
+  "independent_cash_replay": "PASS",
+  "cash": "7020.00",
+  "forecast_daily_recurrence_90_points": "PASS",
+  "no_change_simulation_equals_baseline": "PASS",
+  "inventory_purchase_day_one_delta": "-8000.00",
+  "mode": "synthetic, no LLM, no external action dispatch"
+}
