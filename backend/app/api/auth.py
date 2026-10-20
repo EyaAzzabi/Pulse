@@ -46,7 +46,8 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     except OtpError as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc))
 
-    user = User(email=email, password_hash=hash_password(payload.password), full_name=payload.full_name, account_status="PENDING", email_verified=True)
+    # Verifying the emailed code is the approval step; admins can still suspend later.
+    user = User(email=email, password_hash=hash_password(payload.password), full_name=payload.full_name, account_status="APPROVED", email_verified=True)
     db.add(user)
     db.flush()
 

@@ -3,7 +3,7 @@ import pytest
 from app.core.security import create_access_token, hash_password
 from app.models.admin import AccountReview
 from app.models.user import User
-from tests.conftest import TEST_OTP, register_and_login
+from tests.conftest import TEST_OTP, TestSessionLocal, register_and_login
 
 
 @pytest.fixture
@@ -17,20 +17,37 @@ def admin_headers(db_session):
     db_session.commit()
 
 
-def pending_account(client, email):
+def verified_signup(client, email):
     assert client.post("/auth/request-otp", json={"email": email}).status_code == 200
-    registration = client.post("/auth/register", json={"email": email, "password": "StrongPass123", "full_name": "Pending User", "organization_name": "Pending Co", "otp_code": TEST_OTP, "is_admin": True, "account_status": "APPROVED"})
+    registration = client.post("/auth/register", json={"email": email, "password": "StrongPass123", "full_name": "Pending User", "organization_name": "Pending Co", "otp_code": TEST_OTP, "is_admin": True, "account_status": "PENDING"})
     assert registration.status_code == 201
     headers = {"Authorization": f"Bearer {registration.json()['access_token']}"}
     me = client.get("/auth/me", headers=headers).json()
     return headers, me["user"]["id"], me["memberships"][0]["organization_id"]
 
 
-def test_new_account_is_pending_and_cannot_self_promote(client):
+def pending_account(client, email):
+    """An account put back under review (e.g. an admin re-opened it)."""
+    headers, user_id, org_id = verified_signup(client, email)
+    with TestSessionLocal() as session:
+        session.get(User, user_id).account_status = "PENDING"
+        session.commit()
+    return headers, user_id, org_id
+
+
+def test_verified_signup_is_approved_and_cannot_self_promote(client):
+    headers, _, org_id = verified_signup(client, "auto-approved@example.com")
+    me = client.get("/auth/me", headers=headers).json()
+    assert me["user"]["account_status"] == "APPROVED"
+    assert me["user"]["is_admin"] is False
+    assert client.get("/admin/overview", headers=headers).status_code == 403
+    assert client.get(f"/onboarding?organization_id={org_id}", headers=headers).status_code == 200
+
+
+def test_pending_account_is_blocked(client):
     headers, _, org_id = pending_account(client, "pending-access@example.com")
     me = client.get("/auth/me", headers=headers).json()
     assert me["user"]["account_status"] == "PENDING"
-    assert me["user"]["is_admin"] is False
     for path in ["/admin/overview", "/organizations", f"/financial/summary?organization_id={org_id}", f"/onboarding?organization_id={org_id}"]:
         assert client.get(path, headers=headers).status_code == 403, path
 
