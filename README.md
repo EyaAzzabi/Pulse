@@ -75,7 +75,14 @@ Agents can only **propose**. A Finance Manager or Owner **approves**, then **exe
 ### Notifications
 Shortfall and overdue alerts are raised automatically from the forecast, with deduplication.
 
-![Notifications](submission/screenshots/11_notifications.png)
+| Notification center | Liquidity risk alert |
+|---|---|
+| ![Notifications](submission/screenshots/11_notifications.png) | ![Liquidity risk alert](submission/screenshots/06_liquidity_risk_alert.png) |
+
+### n8n automations
+Approved actions and verification codes are delivered through signed n8n webhooks. The workflows are in [n8n/workflows/](n8n/workflows/).
+
+![n8n verification code workflow](submission/screenshots/12_n8n_workflow.png)
 
 ### Onboarding
 One coherent flow covers the account, an emailed verification code, the company profile and role, and data: an Excel or CSV upload with column mapping, a Google Sheets link, the Northstar Studio company, or quick estimates.
