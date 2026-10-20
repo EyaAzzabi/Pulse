@@ -1,0 +1,25 @@
+........................................................................ [ 82%]
+...............                                                          [100%]
+============================== warnings summary ===============================
+app\schemas\auth.py:30
+  C:\Users\Eya\OneDrive\Documents\GitHub\Pulse\backend\app\schemas\auth.py:30: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class UserOut(BaseModel):
+
+app\schemas\financial.py:29
+  C:\Users\Eya\OneDrive\Documents\GitHub\Pulse\backend\app\schemas\financial.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class TransactionOut(BaseModel):
+
+app\schemas\financial.py:44
+  C:\Users\Eya\OneDrive\Documents\GitHub\Pulse\backend\app\schemas\financial.py:44: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class InvoiceOut(BaseModel):
+
+app\schemas\organization.py:6
+  C:\Users\Eya\OneDrive\Documents\GitHub\Pulse\backend\app\schemas\organization.py:6: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class OrganizationOut(BaseModel):
+
+app\schemas\organization.py:37
+  C:\Users\Eya\OneDrive\Documents\GitHub\Pulse\backend\app\schemas\organization.py:37: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class BusinessProfileOut(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+87 passed, 5 warnings in 22.46s

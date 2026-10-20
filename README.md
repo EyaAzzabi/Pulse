@@ -1,38 +1,105 @@
-# Pulse AI
+<div align="center">
 
-**Your business deserves a financial brain.**
+<img src="frontend/public/logo-full.png" alt="PULSE AI logo" width="280" />
 
-Pulse AI is an intelligent financial copilot for SMEs, built around a
-**Financial Digital Twin**: a deterministic simulation of a business's future
-cash position that lets an owner stress-test decisions — a late-paying
-customer, a large purchase, a financing option — before making them for real.
+# PULSE AI
 
-Built for the **Shenzhen International FinTech Competition 2026 (FinTechathon)**,
-International Track, Topic E — SME Finance Copilot. See
-`docs/COMPETITION_SUBMISSION.md` for the full submission summary and
-`docs/SPEC.md` for the original project brief this implementation follows.
+### See the cash crisis before it arrives.
 
-## Why it's not "just a chatbot"
+A cash-flow copilot for small and medium enterprises: it predicts the next shortfall, simulates rescue strategies in a Financial Digital Twin, and lets AI agents propose actions that only run after a human approves them.
 
-Every number Pulse shows — cash balance, forecast, simulation result, rescue
-plan ranking — is computed by plain, deterministic, tested Python code in
-`backend/app/financial`, `backend/app/forecasting` and `backend/app/simulations`.
-An LLM is optional: if none is configured, the AI Copilot still answers using
-those same numbers, just in plainer sentences. Nothing is ever invented, and
-no action (like sending an invoice reminder) executes without explicit human
-approval. See `docs/ARCHITECTURE.md` for how this is enforced.
+**Shenzhen International FinTech Competition 2026 (FinTechathon) · International Track · Topic E**
 
-## Architecture at a glance
+![PULSE AI landing page](submission/screenshots/01_landing.png)
 
-- **Backend:** FastAPI + SQLAlchemy + SQLite (dev) / PostgreSQL (prod)
-- **Frontend:** React + TypeScript + Vite + Tailwind CSS
-- **AI:** Pluggable LLM provider (Groq / OpenAI-compatible), with a fully
-  functional offline fallback
-- **Automation:** n8n workflow exports + webhook dispatch, with a safe
-  "queued, not sent" fallback when n8n isn't configured
+</div>
 
-Full breakdown: `docs/ARCHITECTURE.md`. Current implementation status,
-feature by feature, honestly: `docs/FEATURE_STATUS.md`.
+---
+
+## Why PULSE AI
+
+A profitable SME can still run out of cash. Late customer payments, clustered supplier bills and tax dates add up to a negative balance weeks later, and spreadsheets do not show when or what to do about it.
+
+PULSE AI answers three questions every morning:
+
+1. **Where am I?** Current cash, 30-day net flow, overdue receivables.
+2. **What is coming?** A deterministic day-by-day forecast, with the lowest point and the first shortfall date.
+3. **What should I do?** Rescue strategies, simulated and ranked by impact, turned into actions a human approves.
+
+Every figure comes from the deterministic financial engine. The language model chooses tools and writes the answer; it never invents numbers.
+
+## The product
+
+### Dashboard
+Insight card with read-aloud, KPIs, a 60-day history plus 60-day forecast chart, upcoming 30 days, overdue aging and what changed.
+
+![Dashboard](submission/screenshots/04_dashboard.png)
+
+### AI Copilot with a visible agent trace
+Five specialised agents (Financial Analyst, Forecast Analyst, Strategic Planner, Workflow Coordinator, Risk Guardian) use OpenAI tool calling on top of the engines, with a deterministic fallback. Conversation history, voice input and read-aloud are included.
+
+![Copilot answering a late-payment question](submission/screenshots/12_copilot_agent_trace.png)
+
+### Cash forecast
+Known flows (open invoices, recurring obligations) plus an uncertain baseline drawn from history.
+
+![Forecast](submission/screenshots/06_forecast.png)
+
+### Financial Digital Twin
+Replay the business under any scenario: customer or supplier delays, revenue and expense changes, financing, one-off purchases.
+
+| Simulator | Scenario result |
+|---|---|
+| ![Simulator](submission/screenshots/07_simulator.png) | ![Simulation result](submission/screenshots/08_simulator_result.png) |
+
+### Human-in-the-loop Decision Center
+Agents can only **propose**. A Finance Manager or Owner **approves**, then **executes**. Unapproved or repeated execution is refused, and an action is never marked as sent unless a configured integration confirmed it.
+
+| Decisions | Invoices |
+|---|---|
+| ![Decision Center](submission/screenshots/10_decisions.png) | ![Invoices](submission/screenshots/09_invoices.png) |
+
+### Notifications
+Shortfall and overdue alerts are raised automatically from the forecast, with deduplication.
+
+![Notifications](submission/screenshots/11_notifications.png)
+
+### Onboarding
+One coherent flow covers the account, an emailed verification code, the company profile and role, and data: an Excel or CSV upload with column mapping, a Google Sheets link, the Northstar Studio company, or quick estimates.
+
+| Sign in | Sign up and onboarding |
+|---|---|
+| ![Login](submission/screenshots/03_login.png) | ![Onboarding](submission/screenshots/02_signup_onboarding.png) |
+
+### Administration console
+Platform administrators review and suspend accounts, browse users and organizations, check service status and read the activity log. Personal emails are masked in these screenshots.
+
+| Overview | Account approvals |
+|---|---|
+| ![Admin overview](submission/screenshots/14_admin_overview.png) | ![Admin validations](submission/screenshots/15_admin_validations.png) |
+| **Users** | **Organizations** |
+| ![Admin users](submission/screenshots/16_admin_users.png) | ![Admin organizations](submission/screenshots/17_admin_organizations.png) |
+| **Service status** | **Activity log** |
+| ![Admin services](submission/screenshots/18_admin_services.png) | ![Admin audit](submission/screenshots/19_admin_audit.png) |
+
+## Architecture
+
+```
+React 19 + Vite + Tailwind  ──JWT──▶  FastAPI
+                                       ├─ api/          auth, onboarding, imports, financial, forecast,
+                                       │                simulations, recommendations, actions, copilot,
+                                       │                notifications, admin
+                                       ├─ agents/       orchestrator (OpenAI tool calling + fallback), tools
+                                       ├─ forecasting/  deterministic forecast engine (Decimal)
+                                       ├─ simulations/  Financial Digital Twin
+                                       └─ services/     rescue plans, alerts, OTP, email, tabular import
+                                              │ SQLAlchemy 2 + Alembic
+                                              ▼
+                                     Supabase Postgres   (SQLite in tests)
+n8n workflows (signed webhooks): verification code, invoice reminder, cash risk alert, digest, recovery plan
+```
+
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [submission/PULSE_Technical_Documentation.pdf](submission/PULSE_Technical_Documentation.pdf).
 
 ## Quick start
 
@@ -42,91 +109,71 @@ feature by feature, honestly: `docs/FEATURE_STATUS.md`.
 cd backend
 python -m venv .venv
 ./.venv/Scripts/pip install -r requirements.txt     # macOS/Linux: .venv/bin/pip
+# create backend/.env: DATABASE_URL, JWT secret; optional OPENAI_API_KEY, SMTP_*, N8N_*
 ./.venv/Scripts/python -m alembic upgrade head
-./.venv/Scripts/python scripts/seed_demo.py          # seeds the Northstar Studio demo org
+./.venv/Scripts/python scripts/seed_demo.py          # loads the Northstar Studio company
 ./.venv/Scripts/python -m uvicorn app.main:app --reload --port 8000
 ```
 
-The seed script prints a one-time login (email + generated password) for the
-demo organization — it is never hardcoded, so re-run it any time to get a
-fresh reproducible demo and reset the data to its original state.
-
-Backend runs at `http://localhost:8000`. Interactive API docs (OpenAPI/Swagger)
-at `http://localhost:8000/docs`. Health check: `GET /health`.
+API docs at `http://localhost:8000/docs`, health check at `GET /health`. The seed script prints a login for Northstar Studio (set `DEMO_USER_PASSWORD` to choose it). Without an OpenAI key, the copilot runs in deterministic mode.
 
 ### 2. Frontend
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev        # http://localhost:5173, backend via VITE_API_BASE_URL
 ```
 
-Frontend runs at `http://localhost:5173` and talks to the backend at
-`http://localhost:8000` by default (override with `VITE_API_BASE_URL`).
-
-### 3. Run the tests
+### 3. Tests
 
 ```bash
 cd backend
-./.venv/Scripts/python -m pytest -q
+./.venv/Scripts/python -m pytest -q     # 87 passed
 ```
 
-32 tests cover auth, tenant isolation, role enforcement, the deterministic
-financial engine, forecast determinism, simulation isolation, and the
-Decision Center's approval/idempotency rules. See
-`docs/COMPETITION_SUBMISSION.md` for what's been run and verified versus
-planned.
+The tests cover auth and email codes, tenant isolation, roles, onboarding, imports, the financial engine, forecast and simulation regressions, rescue plans, agent tool permissions, the approval workflow, notifications and admin. The latest output is in [submission/execution_evidence/test_output.txt](submission/execution_evidence/test_output.txt).
 
-## Environment variables
+### 4. Administrator
 
-Copy `.env.example` to `backend/.env` and adjust. Every variable has a safe
-local default — **Pulse runs fully offline** (deterministic engine + SQLite,
-no external API keys) out of the box. See the comments in `.env.example` for
-what each optional integration (LLM provider, n8n, SMTP) unlocks.
+```bash
+cd backend && python scripts/create_admin.py admin@example.com --name "Pulse Administrator"
+```
 
-## Demo scenario
+See [docs/ADMIN.md](docs/ADMIN.md) and [n8n/README.md](n8n/README.md).
 
-The seeded "Northstar Studio" organization (e-commerce/retail, EUR) has six
-months of transaction history, several overdue receivables, a large
-upcoming inventory payable, and recurring payroll/rent/software obligations —
-enough for the deterministic forecast to surface a real (not scripted) future
-cash dip. Walkthrough: `docs/DEMO_SCRIPT.md`.
+## Competition deliverables
 
-## AI limitations and responsible use
+| # | Deliverable | Location |
+|---|---|---|
+| 01 | Technical documentation | [submission/PULSE_Technical_Documentation.pdf](submission/PULSE_Technical_Documentation.pdf) |
+| 02 | Presentation deck | [submission/PULSE_Presentation.pptx](submission/PULSE_Presentation.pptx), [PDF](submission/PULSE_Presentation.pdf) |
+| 03 | Demo video (optional) | [submission/VIDEO_RECORDING_GUIDE.md](submission/VIDEO_RECORDING_GUIDE.md) |
+| 04 | Source code | this repository, [submission/SOURCE_CODE_INFORMATION.md](submission/SOURCE_CODE_INFORMATION.md) |
+| 05 | Security self-assessment | [submission/PULSE_Security_Self_Assessment.pdf](submission/PULSE_Security_Self_Assessment.pdf) |
+| 06 | Execution evidence | [submission/execution_evidence/](submission/execution_evidence/) |
 
-- Pulse AI is **decision support, not a regulated financial adviser**.
-- Forecasts and simulations are estimates based on recorded data and explicit
-  assumptions — never guarantees.
-- The AI copilot can only state figures the deterministic financial engine
-  already computed; it cannot invent balances, dates, or outcomes.
-- No real money transfer, borrowing, or banking transaction is implemented or
-  possible through this platform.
-- Every consequential action (e.g. an invoice reminder email) requires
-  explicit human approval and is never silently marked as delivered unless a
-  configured integration actually confirmed it.
+Status of each item: [submission/SUBMISSION_CHECKLIST.md](submission/SUBMISSION_CHECKLIST.md).
 
-## Security
+## Responsible AI
 
-Passwords are bcrypt-hashed; JWT-based auth; every organization-scoped
-endpoint is authorized server-side (see `backend/app/api/deps.py`); secrets
-live only in environment variables, never in frontend code or commits. See
-`docs/ARCHITECTURE.md#security-boundaries`.
+- PULSE AI is decision support, not a regulated financial adviser.
+- Forecasts and simulations are estimates from recorded data and explicit assumptions, never guarantees.
+- The copilot can only state figures the engine computed.
+- No money transfer, borrowing or banking transaction is possible through the platform.
+- Every consequential action needs explicit human approval and is recorded in the audit log.
 
 ## Repository layout
 
 ```
-backend/    FastAPI app, financial/forecasting/simulation engines, tests
-frontend/   React + Vite + TypeScript app
-n8n/        Exportable n8n workflow JSON (cash alerts, reminders, digests)
-demo/       (reserved for exported demo datasets/scenarios)
-docs/       Architecture, competition submission, demo script, feature status
+backend/     FastAPI app, engines, agents, Alembic migrations, tests, scripts
+frontend/    React + Vite + TypeScript app
+n8n/         Exportable n8n workflows
+demo/        Sample datasets (e.g. demo/datasets/test_bank_export.csv)
+docs/        Architecture, feature status, demo script, admin guide
+submission/  Competition deliverables, screenshots, execution evidence
 ```
 
-## Administration and email verification
+## Team
 
-See [docs/ADMIN.md](docs/ADMIN.md) for account approval and administrator setup.
-New signups require a real email channel: configure SMTP or the OTP n8n webhook
-in backend/.env. See [n8n/README.md](n8n/README.md) for all five workflows and
-the direct Gmail SMTP fallback. Secrets and local administrator credentials
-are excluded from Git.
+Built for FinTechathon 2026 by the PULSE AI team.
