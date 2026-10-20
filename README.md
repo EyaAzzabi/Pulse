@@ -19,7 +19,7 @@ It predicts the next shortfall, simulates rescue strategies in a Financial Digit
 ![Tests](https://img.shields.io/badge/tests-87%20passed-14B8A6)
 ![Human in the loop](https://img.shields.io/badge/actions-human%20approval-0B1F3A)
 
-[Why](#why-pulse-ai) · [Product](#the-product) · [Architecture](#architecture) · [Quick start](#quick-start) · [Deliverables](#competition-deliverables) · [Responsible AI](#responsible-ai)
+[Why](#why-pulse-ai) · [Product](#the-product) · [Architecture](#architecture) · [Install and test](#installation-and-testing-guide) · [Responsible AI](#responsible-ai)
 
 <br/>
 
@@ -112,61 +112,165 @@ React 19 + Vite + Tailwind  ──JWT──▶  FastAPI
 n8n workflows (signed webhooks): verification code, invoice reminder, cash risk alert, digest, recovery plan
 ```
 
-Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [submission/PULSE_Technical_Documentation.pdf](submission/PULSE_Technical_Documentation.pdf).
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Quick start
+## Installation and testing guide
 
-### 1. Backend
+Follow these steps in order. Setup takes about 10 minutes and runs entirely on your computer: no cloud account and no API key are required.
+
+### Step 0. Prerequisites
+
+| Tool | Version | Check with |
+|---|---|---|
+| Git | any recent | `git --version` |
+| Python | 3.11 or newer | `python --version` |
+| Node.js | 20.19 or newer (includes npm) | `node --version` |
+
+You need **two terminals**: one for the backend, one for the frontend.
+
+### Step 1. Get the code
+
+```bash
+git clone https://github.com/EyaAzzabi/Pulse.git
+cd Pulse
+```
+
+### Step 2. Install the backend (terminal 1)
 
 ```bash
 cd backend
 python -m venv .venv
-./.venv/Scripts/pip install -r requirements.txt     # macOS/Linux: .venv/bin/pip
-# create backend/.env: DATABASE_URL, JWT secret; optional OPENAI_API_KEY, SMTP_*, N8N_*
-./.venv/Scripts/python -m alembic upgrade head
-./.venv/Scripts/python scripts/seed_demo.py          # loads the Northstar Studio company
-./.venv/Scripts/python -m uvicorn app.main:app --reload --port 8000
 ```
 
-API docs at `http://localhost:8000/docs`, health check at `GET /health`. The seed script prints a login for Northstar Studio (set `DEMO_USER_PASSWORD` to choose it). Without an OpenAI key, the copilot runs in deterministic mode.
+Activate the virtual environment:
 
-### 2. Frontend
+| System | Command |
+|---|---|
+| Windows (PowerShell) | `.\.venv\Scripts\Activate.ps1` |
+| Windows (Git Bash) | `source .venv/Scripts/activate` |
+| macOS / Linux | `source .venv/bin/activate` |
+
+Then install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3. Configure the backend
+
+Create a file named `.env` inside the `backend/` folder with this content:
+
+```env
+# Local database (a SQLite file is created automatically)
+DATABASE_URL=sqlite:///./pulse.db
+JWT_SECRET=change-me-to-any-long-random-string
+
+# Show sign-up verification codes in the backend terminal (local testing only)
+OTP_ALLOW_SERVER_LOG=true
+
+# Optional: AI copilot with OpenAI. Without these lines the copilot still
+# works in deterministic mode, answering from the financial engine.
+# LLM_PROVIDER=openai
+# LLM_API_KEY=sk-...
+# LLM_MODEL=gpt-4o-mini
+```
+
+> Never commit the `.env` file. It is already listed in `.gitignore`.
+
+### Step 4. Create the database and load the sample company
+
+```bash
+python -m alembic upgrade head
+python scripts/seed_demo.py
+```
+
+The seed script loads **Northstar Studio**: six months of transactions, overdue invoices and recurring bills. It prints the login:
+
+```
+Northstar Studio seeded successfully.
+  Login email:  owner@northstarstudio.demo
+  Password:     <generated password>
+```
+
+Keep that password. To choose your own, set it before running the script: `export DEMO_USER_PASSWORD=YourPassword123` (PowerShell: `$env:DEMO_USER_PASSWORD="YourPassword123"`). Run the script again at any time to reset the data.
+
+### Step 5. Start the backend
+
+```bash
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+Check that it works: http://localhost:8000/health returns `"status": "ok"`, and http://localhost:8000/docs shows the interactive API documentation. Leave this terminal open.
+
+### Step 6. Install and start the frontend (terminal 2)
 
 ```bash
 cd frontend
 npm install
-npm run dev        # http://localhost:5173, backend via VITE_API_BASE_URL
+npm run dev
 ```
 
-### 3. Tests
+Open **http://localhost:5173**. The frontend forwards API calls to the backend on port 8000 automatically.
+
+### Step 7. Test the application
+
+Sign in with the Northstar Studio login from step 4, then follow this scenario:
+
+1. **Dashboard**: current cash, risk level, and the date the forecast predicts cash will go below zero.
+2. **Forecast**: the day-by-day projection for the next 90 days and its lowest point.
+3. **Simulator**: set a 30-day customer payment delay, run the simulation and compare it with the baseline.
+4. **Dashboard, then Explore rescue strategies**: strategies ranked by how much they improve the lowest cash point.
+5. **Copilot**: ask *"What happens if Atlas Retail pays 30 days late, and how can I avoid a cash shortage?"* Open **How PULSE answered** under the reply to see which agents and tools were used. Try the microphone and **Listen** buttons (Chrome or Edge).
+6. **Copilot**: ask *"Prepare reminders for my overdue invoices."* The agent only proposes the action.
+7. **Decisions**: approve the proposed action, then execute it. Without an email workflow configured, the status becomes `QUEUED`: the action is recorded but nothing is sent.
+8. **Notifications**: shortfall and overdue invoice alerts.
+
+**Test the sign-up flow:** log out, choose **Sign up** and use any email address. The 6-digit verification code is printed in the **backend terminal** (`Verification code for ...`). Enter it, complete the company profile, then connect data with one of the options: upload [demo/datasets/test_bank_export.csv](demo/datasets/test_bank_export.csv), paste a Google Sheets link, load the Northstar Studio sample, or enter estimates.
+
+### Step 8. Test the administration console (optional)
+
+In terminal 1, stop the server (Ctrl+C), create an administrator, then start the server again:
 
 ```bash
-cd backend
-./.venv/Scripts/python -m pytest -q     # 87 passed
+python scripts/create_admin.py admin@example.com --name "Pulse Administrator"
+python -m uvicorn app.main:app --reload --port 8000
 ```
 
-The tests cover auth and email codes, tenant isolation, roles, onboarding, imports, the financial engine, forecast and simulation regressions, rescue plans, agent tool permissions, the approval workflow, notifications and admin. The latest output is in [submission/execution_evidence/test_output.txt](submission/execution_evidence/test_output.txt).
+The script asks for a password (12 characters minimum). Sign in with that account to open the admin console: overview, account approvals, users, organizations, service status and activity log. See [docs/ADMIN.md](docs/ADMIN.md).
 
-### 4. Administrator
+### Step 9. Run the automated tests
+
+In terminal 1, with the virtual environment active:
 
 ```bash
-cd backend && python scripts/create_admin.py admin@example.com --name "Pulse Administrator"
+python -m pytest -q
 ```
 
-See [docs/ADMIN.md](docs/ADMIN.md) and [n8n/README.md](n8n/README.md).
+Expected result: `87 passed`. The tests use their own temporary SQLite database and do not touch your data. They cover authentication and email codes, tenant isolation, roles, onboarding, imports, the financial engine, forecast and simulation, rescue plans, agent tool permissions, the approval workflow, notifications and administration.
 
-## Competition deliverables
+To check the frontend build: `cd frontend && npm run build`.
 
-| # | Deliverable | Location |
-|---|---|---|
-| 01 | Technical documentation | [submission/PULSE_Technical_Documentation.pdf](submission/PULSE_Technical_Documentation.pdf) |
-| 02 | Presentation deck | [submission/PULSE_Presentation.pptx](submission/PULSE_Presentation.pptx), [PDF](submission/PULSE_Presentation.pdf) |
-| 03 | Demo video (optional) | [submission/VIDEO_RECORDING_GUIDE.md](submission/VIDEO_RECORDING_GUIDE.md) |
-| 04 | Source code | this repository, [submission/SOURCE_CODE_INFORMATION.md](submission/SOURCE_CODE_INFORMATION.md) |
-| 05 | Security self-assessment | [submission/PULSE_Security_Self_Assessment.pdf](submission/PULSE_Security_Self_Assessment.pdf) |
-| 06 | Execution evidence | [submission/execution_evidence/](submission/execution_evidence/) |
+### Optional integrations
 
-Status of each item: [submission/SUBMISSION_CHECKLIST.md](submission/SUBMISSION_CHECKLIST.md).
+Add these to `backend/.env` and restart the backend:
+
+| Feature | Variables |
+|---|---|
+| Supabase / PostgreSQL instead of SQLite | `DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres` (for Supabase, use the session pooler host), then run `python -m alembic upgrade head` again |
+| Real verification emails (SMTP, e.g. a Gmail app password) | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` |
+| n8n workflows (emails, reminders, alerts) | `N8N_WEBHOOK_URL`, `N8N_OTP_WEBHOOK_URL`, `N8N_WEBHOOK_SECRET`. Import the workflows from [n8n/workflows/](n8n/workflows/) as described in [n8n/README.md](n8n/README.md) |
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `python` not found on Windows | Use `py` instead of `python`, or reinstall Python with "Add to PATH" checked |
+| PowerShell refuses to activate the venv | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once |
+| `npm run dev` fails | Check that `node --version` is 20.19 or newer |
+| Port 8000 or 5173 already in use | Stop the other process, or start uvicorn with `--port 8001` and set `VITE_API_BASE_URL=http://localhost:8001` in `frontend/.env.local` |
+| `(trapped) error reading bcrypt version` | Harmless passlib warning, ignore it |
+| No verification code appears | Check that `OTP_ALLOW_SERVER_LOG=true` is in `backend/.env`, then restart the backend |
+| Login fails after reseeding | Use the new password printed by `seed_demo.py` |
 
 ## Responsible AI
 
@@ -184,7 +288,7 @@ frontend/    React + Vite + TypeScript app
 n8n/         Exportable n8n workflows
 demo/        Sample datasets (e.g. demo/datasets/test_bank_export.csv)
 docs/        Architecture, feature status, demo script, admin guide
-submission/  Competition deliverables, screenshots, execution evidence
+submission/  Screenshots used in this README
 ```
 
 ## Team
