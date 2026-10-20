@@ -15,6 +15,10 @@ class User(Base, IDMixin, TimestampMixin):
     default_currency: Mapped[str] = mapped_column(String(3), default="EUR")
     timezone: Mapped[str] = mapped_column(String(64), default="UTC")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
+    account_status: Mapped[str] = mapped_column(String(16), default="APPROVED", server_default="APPROVED", nullable=False)
+    review_reason: Mapped[str] = mapped_column(String(1000), default="", server_default="", nullable=False)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
 
     memberships: Mapped[list["Membership"]] = relationship(back_populates="user")
 

@@ -8,7 +8,7 @@ from app.models.user import Membership, User
 ROLE_RANK = {"VIEWER": 0, "ACCOUNTANT": 1, "FINANCE_MANAGER": 2, "OWNER": 3}
 
 
-def get_current_user(
+def get_authenticated_user(
     authorization: str | None = Header(default=None),
     db: Session = Depends(get_db),
 ) -> User:
@@ -21,6 +21,18 @@ def get_current_user(
     user = db.get(User, payload["sub"])
     if not user or not user.is_active:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found or inactive")
+    return user
+
+
+def get_current_user(user: User = Depends(get_authenticated_user)) -> User:
+    if user.account_status != "APPROVED":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Account approval required")
+    return user
+
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    if not user.is_admin:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Administrator access required")
     return user
 
 

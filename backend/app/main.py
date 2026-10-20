@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import actions, auth, copilot, financial, forecast, imports, notifications, onboarding, organizations, recommendations, simulations
+from app.api import actions, admin, auth, copilot, financial, forecast, imports, notifications, onboarding, organizations, recommendations, simulations
 from app.core.config import get_settings
 from app.db.session import Base, engine
 from app import models  # noqa: F401  ensures all models are registered on Base.metadata
@@ -36,6 +36,7 @@ def health():
 
 
 app.include_router(auth.router)
+app.include_router(admin.router)
 app.include_router(organizations.router)
 app.include_router(onboarding.router)
 app.include_router(financial.router)
